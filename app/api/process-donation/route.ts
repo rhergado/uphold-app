@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { getCharityById } from "@/lib/charities";
 
 /**
- * This endpoint marks a payment as donated to charity.
- * In a real implementation, this would integrate with charity payment APIs.
- * For MVP, we're tracking the donation intent in the database.
+ * SIMULATED DONATION PROCESSING (MVP/Testing Mode)
+ *
+ * This endpoint simulates donation processing by marking payments as "donated"
+ * without actually transferring funds to charities.
+ *
+ * For production with real donations, you would:
+ * 1. Use Stripe Connect to transfer funds to charity Stripe accounts
+ * 2. Or integrate with charity-specific payment APIs
+ * 3. Store actual transaction IDs and receipts
  */
 export async function POST(request: NextRequest) {
   try {
@@ -38,11 +45,20 @@ export async function POST(request: NextRequest) {
     const platformFee = payment.amount * 0.25;
     const donationAmount = payment.amount * 0.75;
 
+    // Get charity details for logging
+    const charityInfo = getCharityById(charity);
+    const charityName = charityInfo?.displayName || charity;
+
+    // SIMULATED DONATION: Mark as donated without actual transfer
+    console.log(`[SIMULATED] Processing donation:
+      Charity: ${charityName}
+      Amount: $${donationAmount.toFixed(2)} (75% of $${payment.amount.toFixed(2)})
+      Platform Fee: $${platformFee.toFixed(2)} (25%)
+      User: ${userId}
+      Commitment: ${commitmentId}
+      Status: SIMULATED (no real money transferred)`);
+
     // Update payment record to mark as donated
-    // In production, you would:
-    // 1. Create a transfer to the charity via Stripe Connect (75% of stake)
-    // 2. Or integrate with charity payment API
-    // 3. Then update the record with the transaction details
     const { error: updateError } = await supabase
       .from("payments")
       .update({
@@ -77,10 +93,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      simulated: true, // Flag to indicate this is a test/simulated donation
       donationAmount: donationAmount,
       platformFee: platformFee,
       originalAmount: payment.amount,
       charity: charity,
+      charityName: charityName,
+      message: `[SIMULATED] Donation of $${donationAmount.toFixed(2)} to ${charityName} processed successfully`,
     });
   } catch (error: any) {
     console.error("Donation error:", error);

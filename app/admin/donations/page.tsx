@@ -129,6 +129,11 @@ export default function AdminDonationsPage() {
           <p className="mt-2 text-gray-600">
             Review and process failed commitments that require charity donations
           </p>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>MVP Mode:</strong> Donations are simulated for testing. No real money is transferred to charities.
+            </p>
+          </div>
         </div>
 
         {error && (
