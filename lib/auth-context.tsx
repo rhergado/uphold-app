@@ -8,6 +8,7 @@ interface User {
   id: string;
   email: string;
   name: string;
+  is_admin: boolean;
 }
 
 interface AuthContextType {
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: data.id,
         name: data.name,
         email: data.email,
+        is_admin: data.is_admin || false,
       };
       setUser(newUser);
       localStorage.setItem("uphold_user", JSON.stringify(newUser));
@@ -109,6 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: foundUser.id,
         name: foundUser.name,
         email: foundUser.email,
+        is_admin: foundUser.is_admin || false,
       };
       setUser(userWithoutPassword);
       localStorage.setItem("uphold_user", JSON.stringify(userWithoutPassword));

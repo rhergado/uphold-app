@@ -8,8 +8,29 @@ import { supabase } from "@/lib/supabase";
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Add admin authentication check here
-    // For now, this is open - secure it before production!
+    // Check admin authentication
+    const userId = request.headers.get("x-user-id");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized - No user ID provided" },
+        { status: 401 }
+      );
+    }
+
+    // Verify user is admin
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("is_admin")
+      .eq("id", userId)
+      .single();
+
+    if (userError || !userData || !userData.is_admin) {
+      return NextResponse.json(
+        { error: "Unauthorized - Admin access required" },
+        { status: 403 }
+      );
+    }
 
     // Fetch all failed commitments with user details
     const { data: failedCommitments, error } = await supabase

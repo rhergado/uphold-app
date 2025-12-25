@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 interface PendingDonation {
   id: string;
@@ -19,19 +20,33 @@ interface PendingDonation {
 
 export default function AdminDonationsPage() {
   const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [donations, setDonations] = useState<PendingDonation[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Redirect non-admin users
   useEffect(() => {
-    fetchPendingDonations();
-  }, []);
+    if (!authLoading && (!user || !user.is_admin)) {
+      router.push("/dashboard");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user && user.is_admin) {
+      fetchPendingDonations();
+    }
+  }, [user]);
 
   const fetchPendingDonations = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/admin/pending-donations");
+      const response = await fetch("/api/admin/pending-donations", {
+        headers: {
+          "x-user-id": user?.id || "",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch pending donations");
@@ -89,15 +104,21 @@ export default function AdminDonationsPage() {
     }
   };
 
-  if (loading) {
+  // Show loading while checking auth
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading pending donations...</p>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     );
+  }
+
+  // Don't render if not admin (will redirect)
+  if (!user || !user.is_admin) {
+    return null;
   }
 
   return (
