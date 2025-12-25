@@ -279,12 +279,14 @@ All API routes in `app/api/`:
 1. **signup** - Create new user account with bcrypt password hashing
 2. **login** - Authenticate user and return user data
 3. **create-commitment** - Create commitment and generate check-ins
-4. **create-payment-intent** - Create Stripe payment intent for stake
-5. **process-refund** - Process Stripe refund for successful commitments
-6. **complete-check-in** - Mark check-in as complete
-7. **update-commitment-statuses** - Automatic status updates (for cron job)
-8. **request-buddy-verification** - Send buddy verification email
-9. **verify-buddy** - Process buddy's approval/rejection
+4. **create-payment-intent** - Create Stripe payment intent for stake, calculate fee breakdown
+5. **process-refund** - Process 95% Stripe refund for successful commitments (5% platform fee)
+6. **process-donation** - Process 75% charity donation for failed commitments (25% platform fee)
+7. **complete-check-in** - Mark check-in as complete
+8. **cron/update-statuses** - Automatic status updates (cron job, runs every 4 hours)
+9. **request-buddy-verification** - Send buddy verification email
+10. **verify-buddy** - Process buddy's approval/rejection
+11. **admin/pending-donations** - Fetch all failed commitments for admin review (⚠️ no auth yet)
 
 ### 9. **UI Components & Styling**
 
@@ -559,6 +561,81 @@ middleware.ts                          # Simplified (allows all routes)
 - `d61c433` - feat: make fee breakdown collapsible
 - `6db8f95` - style: change fees button color to gray
 - `e5c5211` - style: change fees button to black
+
+### Automatic Commitment Status Updates (Cron Job)
+**What Changed:**
+- Implemented automated cron job to check and update commitment statuses every 4 hours
+- Automatically marks expired commitments as failed
+- Triggers charity donations for failed commitments
+- Triggers refunds for successful periodic commitments (80%+ completion)
+
+**Backend:**
+- Created `/api/cron/update-statuses` endpoint with Bearer token authentication
+- Added `vercel.json` configuration for Vercel Cron (runs every 4 hours)
+- Added `CRON_SECRET` environment variable for security
+- Handles both one-time and periodic commitment expiration logic
+
+**Features:**
+- One-time commitments: Marked as failed when `due_date` passes
+- Periodic commitments: Checks 80% completion threshold at end date
+- Automatic refund processing for successful commitments
+- Automatic donation processing for failed commitments
+- Detailed error logging and reporting
+
+**Files:**
+- `app/api/cron/update-statuses/route.ts` - Cron endpoint
+- `vercel.json` - Cron schedule configuration
+- `.env.local` - Added CRON_SECRET
+
+**How to Test:**
+```bash
+curl -H "Authorization: Bearer uphold_cron_secret_key_2025" http://localhost:3000/api/cron/update-statuses
+```
+
+### Manual Donation Administration System
+**What Changed:**
+- Built admin dashboard for reviewing and processing pending charity donations
+- Manual batch donation system (MVP approach - faster than full charity API integration)
+- Admin can review failed commitments and trigger donations individually or in bulk
+
+**Backend:**
+- Created `/api/admin/pending-donations` endpoint to fetch all failed commitments
+- Returns commitment details with user info, charity, and donation amounts
+- Integrates with existing `/api/process-donation` endpoint
+
+**Frontend:**
+- Created admin dashboard at `/admin/donations`
+- Table view showing all pending donations with details
+- Individual "Process" button for each donation
+- "Process All Donations" batch button
+- Real-time loading states and error handling
+- Added "Admin" link to dashboard navigation (orange color for visibility)
+
+**Features:**
+- View all failed commitments pending donation
+- See user email, goal, charity, donation amount, platform fee
+- Process donations one-by-one or in bulk
+- Automatic removal from list after processing
+- Error alerts for failed donation processing
+
+**Files:**
+- `app/admin/donations/page.tsx` - Admin dashboard page
+- `app/api/admin/pending-donations/route.ts` - Fetch pending donations API
+- `app/dashboard/page.tsx` - Added Admin navigation link
+
+**Security Note:**
+- ⚠️ Currently NO authentication on admin endpoints
+- TODO: Add admin role check before production deployment
+- Placeholder comment in code: "TODO: Add admin authentication check here"
+
+**How to Access:**
+1. Navigate to dashboard after login
+2. Click "Admin" button in navigation (orange text)
+3. View all pending donations
+4. Click "Process" on individual items or "Process All Donations" for batch
+
+**Git Commits:**
+- `3a1c35a` - feat: implement automatic commitment status updates with cron job
 
 ---
 

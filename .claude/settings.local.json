@@ -26,7 +26,8 @@
       "Bash(set:*)",
       "Bash(set BACKUP_NAME=%BACKUP_NAME: =0%)",
       "Bash(xcopy:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(timeout /t 5 /nobreak)"
     ]
   }
 }
