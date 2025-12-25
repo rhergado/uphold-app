@@ -25,7 +25,8 @@
       "Bash(psql:*)",
       "Bash(set:*)",
       "Bash(set BACKUP_NAME=%BACKUP_NAME: =0%)",
-      "Bash(xcopy:*)"
+      "Bash(xcopy:*)",
+      "Bash(curl:*)"
     ]
   }
 }
