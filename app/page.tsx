@@ -1,41 +1,50 @@
+"use client";
+
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-5 bg-[#f8f7f4]">
-      <div className="max-w-md w-full text-center space-y-8">
-        {/* User Button - Top Right */}
-        <div className="absolute top-5 right-5">
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
 
-        {/* Logo */}
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-neutral-600">Loading...</div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center px-5 bg-white">
+      <div className="max-w-md w-full text-center space-y-8">
         <div className="space-y-1">
-          <h1 className="text-6xl font-light tracking-tight text-neutral-800">
-            Uphold
+          <h1 className="font-light tracking-tight text-neutral-800" style={{ fontSize: '3.9rem' }}>
+            Up<span className="font-bold">hold</span>
           </h1>
           <p className="text-sm font-light text-neutral-600 tracking-wide">
-            Get it done. For real.
+            Keep your word.
           </p>
         </div>
 
-        {/* CTA Buttons */}
         <div className="pt-4 space-y-3">
-          <SignedIn>
-            <Link href="/create">
-              <Button className="w-full">Create Commitment</Button>
-            </Link>
-          </SignedIn>
-
-          <SignedOut>
-            <Link href="/sign-in">
-              <Button className="w-full">Get Started</Button>
-            </Link>
-          </SignedOut>
+          <Link href="/sign-up" className="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            Sign Up
+          </Link>
+          <Link href="/sign-in" className="block w-full py-3 px-6 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition-colors">
+            Log In
+          </Link>
+          <Link href="/how-it-works" className="block w-full py-3 px-6 text-gray-600 hover:text-blue-600 transition-colors text-center">
+            How it Works
+          </Link>
         </div>
       </div>
     </main>

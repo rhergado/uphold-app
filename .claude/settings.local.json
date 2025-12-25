@@ -7,7 +7,25 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git config:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(taskkill:*)",
+      "Bash(ipconfig:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(if exist .next rmdir /s /q .next)",
+      "Bash(powershell -Command \"if \\(Test-Path .next\\) { Remove-Item -Recurse -Force .next }\")",
+      "Bash(dir:*)",
+      "Bash(move apppage.tsx apppage.tsx.bak)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''app\\\\sign-in\\\\[[...sign-in]]''\")",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''app\\\\sign-up\\\\[[...sign-up]]''\")",
+      "Bash(powershell -Command:*)",
+      "Bash(npx next dev:*)",
+      "Bash(cat:*)",
+      "Bash(psql:*)",
+      "Bash(set:*)",
+      "Bash(set BACKUP_NAME=%BACKUP_NAME: =0%)",
+      "Bash(xcopy:*)"
     ]
   }
 }

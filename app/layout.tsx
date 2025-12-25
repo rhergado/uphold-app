@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Uphold – Commitment-Based Accountability",
   description: "Lock your commitments with accountability",
   manifest: "/manifest.json",
-  themeColor: "#2563eb",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -24,12 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="antialiased bg-white text-neutral-900">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className="antialiased bg-white text-neutral-900">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }

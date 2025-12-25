@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 type VerificationMode = "integrity" | "buddy" | "app";
 type CommitmentType = "one-time" | "periodic";
@@ -27,7 +29,6 @@ const commitmentSchema = z.object({
   buddyEmail: z.string().email("Invalid email").optional().or(z.literal("")),
   charity: z.string().min(1, "Please select a charity"),
   isPublic: z.boolean().default(false),
-  // Periodic fields
   daysOfWeek: z.array(z.number()).optional(),
   durationWeeks: z.coerce.number().optional(),
   startDate: z.string().optional(),
@@ -40,7 +41,6 @@ const commitmentSchema = z.object({
   message: "Buddy email is required for buddy verification",
   path: ["buddyEmail"],
 }).refine((data) => {
-  // One-time commitments require dueDate
   if (data.commitmentType === "one-time") {
     return data.dueDate && data.dueDate.length > 0;
   }
@@ -49,7 +49,6 @@ const commitmentSchema = z.object({
   message: "Due date is required",
   path: ["dueDate"],
 }).refine((data) => {
-  // Validate dueDate is in the future for one-time
   if (data.commitmentType === "one-time" && data.dueDate) {
     const selectedDate = new Date(data.dueDate);
     const today = new Date();
@@ -88,11 +87,14 @@ const commitmentSchema = z.object({
 
 type CommitmentFormData = z.infer<typeof commitmentSchema>;
 
-export default function CreatePage() {
+export default function TestCreatePage() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [verificationMode, setVerificationMode] = useState<VerificationMode>("integrity");
   const [commitmentType, setCommitmentType] = useState<CommitmentType>("one-time");
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [submittedData, setSubmittedData] = useState<CommitmentFormData | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -109,9 +111,78 @@ export default function CreatePage() {
     },
   });
 
-  const onSubmit = (data: CommitmentFormData) => {
-    console.log("Form submitted:", data);
-    setSubmittedData(data);
+  const onSubmit = async (data: CommitmentFormData) => {
+    if (!user) {
+      alert("You must be logged in to create a commitment");
+      router.push("/sign-in");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Calculate due_date based on commitment type
+      let dueDate;
+      if (data.commitmentType === "one-time") {
+        dueDate = `${data.dueDate}T${data.dueTime}:00`;
+      } else {
+        // For periodic, use the end date
+        const start = new Date(data.startDate!);
+        const end = new Date(start);
+        end.setDate(end.getDate() + (data.durationWeeks! * 7));
+        dueDate = end.toISOString();
+      }
+
+      // Prepare commitment data
+      const commitmentData = {
+        user_id: user.id,
+        commitment_type: data.commitmentType,
+        intention: data.intention,
+        outcome: data.outcome,
+        due_date: dueDate,
+        stake: data.stake,
+        verification_mode: data.verificationMode,
+        buddy_email: data.buddyEmail || null,
+        charity: data.charity,
+        is_public: data.isPublic,
+        status: "active",
+        // Periodic-specific fields
+        days_of_week: data.daysOfWeek || null,
+        duration_weeks: data.durationWeeks || null,
+        start_date: data.startDate || null,
+        due_time: data.dueTime,
+      };
+
+      // Insert into Supabase
+      const { data: insertedCommitment, error } = await supabase
+        .from("commitments")
+        .insert([commitmentData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating commitment:", error);
+        alert(`Error creating commitment: ${error.message}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      console.log("Commitment created successfully:", insertedCommitment);
+
+      // Test mode: Skip payment for stakes of $5 (for testing purposes)
+      if (data.stake === 5) {
+        alert("Test mode: Payment skipped. Commitment created!");
+        router.push("/dashboard");
+      } else {
+        // Redirect to payment page
+        router.push(`/payment/${insertedCommitment.id}`);
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      alert("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleVerificationChange = (mode: VerificationMode) => {
@@ -176,24 +247,20 @@ export default function CreatePage() {
     }
   };
 
-  // Show summary if form has been submitted
   if (submittedData) {
     return (
       <main className="min-h-screen bg-white">
         <div className="max-w-md mx-auto px-5 py-6">
-          {/* Header */}
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
-              COMMITMENT CREATED
+              COMMITMENT CREATED (TEST MODE)
             </p>
             <h1 className="text-2xl font-semibold text-neutral-950">
               Your commitment is locked
             </h1>
           </div>
 
-          {/* Summary Card */}
           <Card className="p-6 rounded-2xl border border-gray-200 shadow-sm space-y-1.5">
-            {/* Intention */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                 INTENTION
@@ -205,7 +272,6 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Proof */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                 PROOF
@@ -217,8 +283,7 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Due Date & Time - One-time */}
-            {submittedData.commitmentType === "one-time" && (
+            {submittedData.commitmentType === "one-time" && submittedData.dueDate && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                   DUE
@@ -229,7 +294,6 @@ export default function CreatePage() {
               </div>
             )}
 
-            {/* Periodic Schedule */}
             {submittedData.commitmentType === "periodic" && submittedData.daysOfWeek && submittedData.durationWeeks && submittedData.startDate && (
               <>
                 <div>
@@ -278,7 +342,6 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Stake */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                 AT STAKE
@@ -293,7 +356,6 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Charity */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                 IF FAILED
@@ -305,7 +367,6 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Verification */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
                 VERIFICATION
@@ -326,9 +387,16 @@ export default function CreatePage() {
             </div>
           </Card>
 
-          {/* Action Button */}
-          <div className="mt-6">
+          <div className="mt-6 space-y-3">
             <Button
+              className="w-full"
+              size="lg"
+              onClick={() => router.push("/dashboard")}
+            >
+              Go to Dashboard
+            </Button>
+            <Button
+              variant="outline"
               className="w-full"
               size="lg"
               onClick={() => setSubmittedData(null)}
@@ -344,10 +412,9 @@ export default function CreatePage() {
   return (
     <main className="min-h-screen bg-white pb-24">
       <div className="max-w-md mx-auto px-5 py-6">
-        {/* Header */}
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
-            STEP 1 OF 4
+            TEST MODE - NO AUTH
           </p>
           <Progress value={25} className="h-1 mb-4" />
           <h1 className="text-2xl font-semibold text-neutral-950">
@@ -355,10 +422,8 @@ export default function CreatePage() {
           </h1>
         </div>
 
-        {/* Form Card */}
         <Card className="p-6 rounded-2xl border border-gray-200 shadow-sm">
           <form id="commitment-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Commitment Type Toggle */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-neutral-900">
                 Commitment Type
@@ -391,12 +456,8 @@ export default function CreatePage() {
 
             <Separator />
 
-            {/* Intention Input */}
             <div className="space-y-2">
-              <label
-                htmlFor="intention"
-                className="text-sm font-medium text-neutral-900"
-              >
+              <label htmlFor="intention" className="text-sm font-medium text-neutral-900">
                 I will...
               </label>
               <Input
@@ -411,12 +472,8 @@ export default function CreatePage() {
               )}
             </div>
 
-            {/* Outcome Textarea */}
             <div className="space-y-2">
-              <label
-                htmlFor="outcome"
-                className="text-sm font-medium text-neutral-900"
-              >
+              <label htmlFor="outcome" className="text-sm font-medium text-neutral-900">
                 How will you prove it?
               </label>
               <Textarea
@@ -434,13 +491,9 @@ export default function CreatePage() {
               )}
             </div>
 
-            {/* One-time: Due Date & Time */}
             {commitmentType === "one-time" && (
               <div className="space-y-2">
-                <label
-                  htmlFor="dueDate"
-                  className="text-sm font-medium text-neutral-900"
-                >
+                <label htmlFor="dueDate" className="text-sm font-medium text-neutral-900">
                   Due date & time
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -470,10 +523,8 @@ export default function CreatePage() {
               </div>
             )}
 
-            {/* Periodic: Days of Week, Duration, Time */}
             {commitmentType === "periodic" && (
               <>
-                {/* Days of Week */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-900">
                     Which days?
@@ -499,13 +550,9 @@ export default function CreatePage() {
                   )}
                 </div>
 
-                {/* Start Date & Duration */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <label
-                      htmlFor="startDate"
-                      className="text-sm font-medium text-neutral-900"
-                    >
+                    <label htmlFor="startDate" className="text-sm font-medium text-neutral-900">
                       Start date
                     </label>
                     <Input
@@ -516,10 +563,7 @@ export default function CreatePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label
-                      htmlFor="durationWeeks"
-                      className="text-sm font-medium text-neutral-900"
-                    >
+                    <label htmlFor="durationWeeks" className="text-sm font-medium text-neutral-900">
                       Duration (weeks)
                     </label>
                     <Input
@@ -536,12 +580,8 @@ export default function CreatePage() {
                   </div>
                 </div>
 
-                {/* Time for periodic instances */}
                 <div className="space-y-2">
-                  <label
-                    htmlFor="dueTime"
-                    className="text-sm font-medium text-neutral-900"
-                  >
+                  <label htmlFor="dueTime" className="text-sm font-medium text-neutral-900">
                     Time of day
                   </label>
                   <Input
@@ -560,12 +600,8 @@ export default function CreatePage() {
               </>
             )}
 
-            {/* Stake Input */}
             <div className="space-y-2">
-              <label
-                htmlFor="stake"
-                className="text-sm font-medium text-neutral-900"
-              >
+              <label htmlFor="stake" className="text-sm font-medium text-neutral-900">
                 What's at stake?
               </label>
               <div className="relative">
@@ -590,12 +626,8 @@ export default function CreatePage() {
               )}
             </div>
 
-            {/* Charity Selection */}
             <div className="space-y-2">
-              <label
-                htmlFor="charity"
-                className="text-sm font-medium text-neutral-900"
-              >
+              <label htmlFor="charity" className="text-sm font-medium text-neutral-900">
                 If you fail, donate to:
               </label>
               <select
@@ -619,14 +651,10 @@ export default function CreatePage() {
               </p>
             </div>
 
-            {/* Privacy Toggle */}
             <div className="space-y-2">
               <div className="flex items-center justify-between p-4 rounded-lg border border-gray-200 bg-gray-50">
                 <div className="flex-1">
-                  <label
-                    htmlFor="isPublic"
-                    className="text-sm font-medium text-neutral-900 cursor-pointer"
-                  >
+                  <label htmlFor="isPublic" className="text-sm font-medium text-neutral-900 cursor-pointer">
                     Share with community
                   </label>
                   <p className="text-xs text-gray-500 mt-1">
@@ -646,13 +674,11 @@ export default function CreatePage() {
 
             <Separator className="my-6" />
 
-            {/* Verification Mode */}
             <div className="space-y-4">
               <label className="text-sm font-medium text-neutral-900">
                 How will you verify?
               </label>
 
-              {/* Integrity Mode */}
               <div className="flex items-start justify-between gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
                 <div className="flex-1">
                   <div className="font-medium text-neutral-900 text-sm mb-1">
@@ -668,7 +694,6 @@ export default function CreatePage() {
                 />
               </div>
 
-              {/* Buddy Mode */}
               <div className="flex items-start justify-between gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
                 <div className="flex-1">
                   <div className="font-medium text-neutral-900 text-sm mb-1">
@@ -684,7 +709,6 @@ export default function CreatePage() {
                 />
               </div>
 
-              {/* App Verification */}
               <div className="flex items-start justify-between gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
                 <div className="flex-1">
                   <div className="font-medium text-neutral-900 text-sm mb-1">
@@ -700,13 +724,9 @@ export default function CreatePage() {
                 />
               </div>
 
-              {/* Conditional Buddy Email */}
               {verificationMode === "buddy" && (
                 <div className="space-y-2 pt-2">
-                  <label
-                    htmlFor="buddyEmail"
-                    className="text-sm font-medium text-neutral-900"
-                  >
+                  <label htmlFor="buddyEmail" className="text-sm font-medium text-neutral-900">
                     Buddy's email
                   </label>
                   <Input
@@ -726,12 +746,13 @@ export default function CreatePage() {
                 </div>
               )}
 
-              {/* Conditional App Verification Instructions */}
               {verificationMode === "app" && (
                 <div className="space-y-2 pt-2">
                   <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
                     <p className="text-xs text-blue-900">
-                      After your deadline, you'll be prompted to submit proof (like a photo of a plane ticket, screenshot, etc.). Our team will review and verify within 24 hours.
+                      {commitmentType === "periodic"
+                        ? "After each occurrence, you'll be prompted to submit proof (like a photo or screenshot). Our team will review and verify within 24 hours."
+                        : "After your deadline, you'll be prompted to submit proof (like a photo of a plane ticket, screenshot, etc.). Our team will review and verify within 24 hours."}
                     </p>
                   </div>
                 </div>
@@ -741,11 +762,25 @@ export default function CreatePage() {
         </Card>
       </div>
 
-      {/* Sticky Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-5 py-4">
-        <div className="max-w-md mx-auto">
-          <Button type="submit" form="commitment-form" className="w-full" size="lg">
-            Continue
+        <div className="max-w-md mx-auto flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/dashboard")}
+            className="flex-1"
+            size="lg"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="commitment-form"
+            className="flex-1"
+            size="lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : "Continue"}
           </Button>
         </div>
       </div>
