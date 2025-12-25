@@ -513,7 +513,7 @@ export default function CommitmentDetailsPage() {
                   <button
                     type="button"
                     onClick={() => setShowFeeBreakdown(!showFeeBreakdown)}
-                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-xs text-gray-600 hover:text-gray-800 font-medium"
                   >
                     {showFeeBreakdown ? "Hide fees" : "Show fees"}
                   </button>
