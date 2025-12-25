@@ -636,6 +636,53 @@ curl -H "Authorization: Bearer uphold_cron_secret_key_2025" http://localhost:300
 
 **Git Commits:**
 - `3a1c35a` - feat: implement automatic commitment status updates with cron job
+- `9e54321` - feat: implement manual admin donation system
+- `15fb0c2` - feat: add admin role authentication for donation dashboard
+
+### Admin Role & Authentication System
+**What Changed:**
+- Implemented secure admin role system for donation management
+- Added `is_admin` boolean column to users table
+- Protected admin routes and API endpoints with authentication checks
+
+**Database:**
+- Migration: `database_migrations/add_admin_role.sql`
+- Added `is_admin` column (defaults to FALSE for all users)
+- Set admin via SQL: `UPDATE users SET is_admin = TRUE WHERE email = 'your@email.com'`
+
+**Backend Security:**
+- Protected `/api/admin/pending-donations` with admin verification
+- Checks user ID via `x-user-id` header on every request
+- Queries database to verify `is_admin = true`
+- Returns 401 (Unauthorized) if no user ID provided
+- Returns 403 (Forbidden) if user is not admin
+
+**Frontend Security:**
+- Admin button only visible to users with `is_admin = true`
+- Admin dashboard page redirects non-admins to dashboard
+- Auth context includes `is_admin` field from database
+- User object persisted in localStorage with admin flag
+
+**How to Set Admin:**
+```sql
+-- Step 1: Add column
+ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+
+-- Step 2: Set admin by email (recommended)
+UPDATE users SET is_admin = TRUE WHERE email = 'your-email@example.com';
+
+-- Step 3: Log out and log back in to refresh session
+```
+
+**Files:**
+- `database_migrations/add_admin_role.sql` - Database migration with setup instructions
+- `lib/auth-context.tsx` - Updated User interface with is_admin field
+- `app/admin/donations/page.tsx` - Added admin check and redirect
+- `app/api/admin/pending-donations/route.ts` - Added admin authentication
+- `app/dashboard/page.tsx` - Conditionally show Admin button
+
+**Git Commits:**
+- `15fb0c2` - feat: add admin role authentication for donation dashboard
 
 ---
 
@@ -649,8 +696,15 @@ curl -H "Authorization: Bearer uphold_cron_secret_key_2025" http://localhost:300
 
 ### Authentication
 - User data is in localStorage, check with: `localStorage.getItem('uphold_user')`
-- Users list: `localStorage.getItem('uphold_users')`
+- User object includes: id, email, name, **is_admin** (boolean)
 - To test: Sign up with any email/password, it will work
+
+### Admin System
+- **Only admins** see the orange "Admin" button in navigation
+- Admin dashboard at `/admin/donations` shows failed commitments
+- Set admin in Supabase: `UPDATE users SET is_admin = TRUE WHERE email = 'your@email.com'`
+- Must log out and log back in after setting admin role
+- API endpoints check admin status on every request
 
 ### Mobile Testing
 - Dev server runs on: `npm run dev -- -H 0.0.0.0`
