@@ -1,6 +1,6 @@
 # Uphold - Project Status Document
 
-**Last Updated**: December 24, 2025 - Evening Session
+**Last Updated**: December 25, 2025 - New Pricing Model Implementation
 **Next.js Version**: 15.3.0 (downgraded from 16.1.1 due to Turbopack crashes)
 **Dev Server**: http://192.168.12.111:3002 (for mobile testing)
 
@@ -26,7 +26,8 @@ Uphold is a commitment-based accountability app that helps users follow through 
 1. **users** - User accounts
    - Columns: id (UUID), name, email, password_hash, created_at
 2. **commitments** - User commitments
-   - Columns: id, user_id, type, intention, outcome, stake, verification_mode, buddy_email, charity_id, is_public, due_date, schedule, status, payment_intent_id, created_at, updated_at
+   - Columns: id, user_id, type, intention, outcome, stake, verification_mode, buddy_email, charity_id, is_public, due_date, schedule, status, payment_intent_id, **platform_fee_amount**, **charity_donation_amount**, **refund_amount**, created_at, updated_at
+   - **NEW (Dec 25)**: Added fee tracking columns for new pricing model
 3. **check_ins** - Progress tracking for periodic commitments
    - Columns: id, commitment_id, user_id, due_date, completed_at, status, created_at
 4. **buddy_verifications** - Buddy verification requests and responses
@@ -74,8 +75,62 @@ Uphold is a commitment-based accountability app that helps users follow through 
 **Files**:
 - `app/payment/[id]/page.tsx` - Payment page with Stripe Elements
 - `app/payment/success/page.tsx` - Success page with 5s countdown
-- `app/api/create-payment-intent/route.ts` - Creates Stripe payment intent
-- `app/api/process-refund/route.ts` - Processes refund for successful commitments
+- `app/api/create-payment-intent/route.ts` - Creates Stripe payment intent and calculates fees
+- `app/api/process-refund/route.ts` - Processes 95% refund for successful commitments
+- `app/api/process-donation/route.ts` - Processes 75% charity donation for failed commitments
+
+### 3.5. **NEW: Platform Pricing Model** (COMPLETED - Dec 25, 2025)
+**Implemented a revenue-generating fee structure:**
+
+#### **Pricing Structure:**
+- **Success (commitment completed)**:
+  - User gets back: **95%** of stake
+  - Platform fee: **5%**
+  - Charity donation: **0%**
+
+- **Failure (commitment missed)**:
+  - User gets back: **0%**
+  - Platform fee: **25%**
+  - Charity donation: **75%**
+
+#### **Example Calculations:**
+| Stake Amount | Success Refund | Success Fee | Failure Donation | Failure Fee |
+|--------------|----------------|-------------|------------------|-------------|
+| $5.00        | $4.75          | $0.25       | $3.75            | $1.25       |
+| $20.00       | $19.00         | $1.00       | $15.00           | $5.00       |
+| $100.00      | $95.00         | $5.00       | $75.00           | $25.00      |
+
+#### **Database Changes:**
+- Added 3 new columns to `commitments` table:
+  - `platform_fee_amount` (DECIMAL) - Stores actual fee collected (5% or 25%)
+  - `charity_donation_amount` (DECIMAL) - Stores actual charity donation (0% or 75%)
+  - `refund_amount` (DECIMAL) - Stores actual refund to user (95% or 0%)
+- Migration file: `database_migrations/add_fee_columns.sql`
+
+#### **API Updates:**
+1. **`/api/create-payment-intent`** - Calculates and returns fee breakdown
+2. **`/api/process-refund`** - Refunds 95%, keeps 5% platform fee, updates commitment
+3. **`/api/process-donation`** - Donates 75% to charity, keeps 25% platform fee, updates commitment
+
+#### **UI Updates:**
+1. **Create Commitment Form** (`app/test-create/page.tsx`):
+   - Collapsible "Show fees" button (black text)
+   - Real-time fee preview updates as user types stake amount
+   - Shows both success and failure scenarios
+
+2. **Commitment Detail Page** (`app/commitment/[id]/page.tsx`):
+   - **Active commitments**: Collapsible fee breakdown showing potential outcomes
+   - **Completed commitments**: Green box showing actual refund and platform fee
+   - **Failed commitments**: Orange box showing actual charity donation and platform fee
+   - Success alert message includes detailed breakdown
+
+**Files Modified:**
+- `app/api/create-payment-intent/route.ts` - Fee calculation
+- `app/api/process-refund/route.ts` - 95% refund logic
+- `app/api/process-donation/route.ts` - 75% donation logic
+- `app/commitment/[id]/page.tsx` - Fee breakdown UI
+- `app/test-create/page.tsx` - Fee preview UI
+- `database_migrations/add_fee_columns.sql` - Database schema
 
 ### 4. **Commitment Tracking System** (COMPLETED)
 - **For Periodic Commitments**: Automatic check-in generation
@@ -293,12 +348,16 @@ app/api/
 ├── signup/route.ts                   # User registration
 ├── login/route.ts                    # User login
 ├── create-commitment/route.ts        # Create commitment
-├── create-payment-intent/route.ts    # Stripe payment intent
-├── process-refund/route.ts           # Stripe refund
+├── create-payment-intent/route.ts    # Stripe payment intent + fee calculation
+├── process-refund/route.ts           # Stripe 95% refund (5% platform fee)
+├── process-donation/route.ts         # 75% charity donation (25% platform fee)
 ├── complete-check-in/route.ts        # Complete check-in
 ├── update-commitment-statuses/route.ts # Status updates (cron)
 ├── request-buddy-verification/route.ts # Send buddy email
 └── verify-buddy/route.ts             # Process buddy response
+
+database_migrations/
+└── add_fee_columns.sql               # Fee tracking columns migration
 
 components/
 ├── providers.tsx                      # Auth + Stripe providers
@@ -470,7 +529,46 @@ middleware.ts                          # Simplified (allows all routes)
 
 ---
 
+---
+
+## 🆕 Recent Changes (December 25, 2025)
+
+### Platform Pricing Model Implementation
+**What Changed:**
+- Implemented revenue-generating fee structure
+- Success: 5% platform fee, 95% refunded to user
+- Failure: 25% platform fee, 75% donated to charity
+
+**Database:**
+- Added 3 fee tracking columns to `commitments` table
+- Migration: `database_migrations/add_fee_columns.sql`
+- Run SQL migration in Supabase dashboard
+
+**Backend:**
+- Updated `/api/create-payment-intent` to calculate fees
+- Updated `/api/process-refund` for 95% refund (5% fee)
+- Updated `/api/process-donation` for 75% charity (25% fee)
+
+**Frontend:**
+- Create form: Collapsible "Show fees" button with real-time preview
+- Commitment details: Fee breakdown for active/completed/failed commitments
+- Success alerts now include detailed fee breakdown
+
+**Git Commits:**
+- `84e922f` - Backup before pricing model implementation
+- `d61c433` - feat: make fee breakdown collapsible
+- `6db8f95` - style: change fees button color to gray
+- `e5c5211` - style: change fees button to black
+
+---
+
 ## 💡 Important Notes for Next Session
+
+### Pricing Model
+- **Success**: User gets 95%, platform keeps 5%
+- **Failure**: Charity gets 75%, platform keeps 25%
+- Fee breakdown shown via collapsible "Show fees" button
+- Actual amounts stored in database after completion/failure
 
 ### Authentication
 - User data is in localStorage, check with: `localStorage.getItem('uphold_user')`
