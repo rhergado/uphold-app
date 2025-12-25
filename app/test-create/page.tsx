@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { CHARITIES, getCharityDisplayName } from "@/lib/charities";
 import { supabase } from "@/lib/supabase";
 
 type VerificationMode = "integrity" | "buddy" | "app";
@@ -366,7 +367,7 @@ export default function TestCreatePage() {
                 IF FAILED
               </p>
               <p className="text-base text-neutral-950 font-medium">
-                Donated to {submittedData.charity.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                Donated to {getCharityDisplayName(submittedData.charity)}
               </p>
             </div>
 
@@ -672,28 +673,48 @@ export default function TestCreatePage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="charity" className="text-sm font-medium text-neutral-900">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-neutral-900">
                 If you fail, donate to:
               </label>
-              <select
-                id="charity"
-                className="w-full px-4 py-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                {...register("charity")}
-              >
-                <option value="">Select a charity...</option>
-                <option value="red-cross">Red Cross</option>
-                <option value="doctors-without-borders">Doctors Without Borders</option>
-                <option value="unicef">UNICEF</option>
-                <option value="world-wildlife-fund">World Wildlife Fund</option>
-                <option value="habitat-for-humanity">Habitat for Humanity</option>
-                <option value="feeding-america">Feeding America</option>
-              </select>
+              <div className="space-y-3">
+                {CHARITIES.map((charity) => {
+                  const isSelected = watch("charity") === charity.id;
+                  return (
+                    <div
+                      key={charity.id}
+                      onClick={() => setValue("charity", charity.id)}
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                        isSelected
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">{charity.icon}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-semibold text-neutral-900">{charity.displayName}</h4>
+                            {isSelected && (
+                              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 mb-1">{charity.category}</p>
+                          <p className="text-sm text-gray-700">{charity.description}</p>
+                          <p className="text-xs text-blue-600 mt-2 font-medium">{charity.impact}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               {errors.charity && (
                 <p className="text-xs text-red-600">{errors.charity.message}</p>
               )}
               <p className="text-xs text-gray-500">
-                Your stake will be donated here if you {commitmentType === "periodic" ? "don't reach 80% completion" : "fail to complete your commitment"}.
+                75% of your stake will be donated here if you {commitmentType === "periodic" ? "don't reach 80% completion" : "fail to complete your commitment"}.
               </p>
             </div>
 
