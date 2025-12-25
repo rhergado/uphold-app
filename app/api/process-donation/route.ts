@@ -33,16 +33,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calculate amounts based on new pricing model
+    // Failure: 25% platform fee, 75% donated to charity
+    const platformFee = payment.amount * 0.25;
+    const donationAmount = payment.amount * 0.75;
+
     // Update payment record to mark as donated
     // In production, you would:
-    // 1. Create a transfer to the charity via Stripe Connect
+    // 1. Create a transfer to the charity via Stripe Connect (75% of stake)
     // 2. Or integrate with charity payment API
     // 3. Then update the record with the transaction details
     const { error: updateError } = await supabase
       .from("payments")
       .update({
         status: "donated",
-        donation_amount: payment.amount,
+        donation_amount: donationAmount,
         donation_date: new Date().toISOString(),
         donation_charity: charity,
       })
@@ -56,9 +61,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Update commitment with fee breakdown
+    const { error: commitmentError } = await supabase
+      .from("commitments")
+      .update({
+        platform_fee_amount: platformFee,
+        charity_donation_amount: donationAmount,
+        refund_amount: 0,
+      })
+      .eq("id", commitmentId);
+
+    if (commitmentError) {
+      console.error("Failed to update commitment:", commitmentError);
+    }
+
     return NextResponse.json({
       success: true,
-      amount: payment.amount,
+      donationAmount: donationAmount,
+      platformFee: platformFee,
+      originalAmount: payment.amount,
       charity: charity,
     });
   } catch (error: any) {

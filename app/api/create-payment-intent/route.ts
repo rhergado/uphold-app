@@ -13,6 +13,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calculate fee breakdown based on new pricing model
+    // Success: 5% platform fee, 95% refunded
+    // Failure: 25% platform fee, 75% donated to charity
+    const successFee = amount * 0.05;
+    const successRefund = amount * 0.95;
+    const failureFee = amount * 0.25;
+    const failureDonation = amount * 0.75;
+
     // Create a PaymentIntent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert dollars to cents
@@ -25,6 +33,26 @@ export async function POST(request: NextRequest) {
         commitmentId,
       },
     });
+
+    // Update commitment with fee calculations
+    const { error: commitmentError } = await supabase
+      .from("commitments")
+      .update({
+        payment_intent_id: paymentIntent.id,
+        // Store the potential amounts (actual amounts set when commitment completes/fails)
+        platform_fee_amount: 0, // Will be set to successFee or failureFee when resolved
+        refund_amount: 0, // Will be set to successRefund when successful
+        charity_donation_amount: 0, // Will be set to failureDonation when failed
+      })
+      .eq("id", commitmentId);
+
+    if (commitmentError) {
+      console.error("Commitment update error:", commitmentError);
+      return NextResponse.json(
+        { error: "Failed to update commitment" },
+        { status: 500 }
+      );
+    }
 
     // Create payment record in database
     const { error: dbError } = await supabase
@@ -49,6 +77,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      feeBreakdown: {
+        stake: amount,
+        success: {
+          platformFee: successFee,
+          refundToUser: successRefund,
+        },
+        failure: {
+          platformFee: failureFee,
+          charityDonation: failureDonation,
+        },
+      },
     });
   } catch (error: any) {
     console.error("Payment intent creation error:", error);

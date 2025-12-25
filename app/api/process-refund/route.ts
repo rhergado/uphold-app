@@ -29,10 +29,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create refund with Stripe
+    // Calculate amounts based on new pricing model
+    // Success: 5% platform fee, 95% refunded to user
+    const platformFee = payment.amount * 0.05;
+    const refundAmount = payment.amount * 0.95;
+
+    // Create partial refund with Stripe (95% of original amount)
     const refund = await stripe.refunds.create({
       payment_intent: payment.stripe_payment_intent_id,
-      amount: Math.round(payment.amount * 100), // Convert to cents
+      amount: Math.round(refundAmount * 100), // Convert to cents
     });
 
     // Update payment record
@@ -40,7 +45,7 @@ export async function POST(request: NextRequest) {
       .from("payments")
       .update({
         status: "refunded",
-        refund_amount: payment.amount,
+        refund_amount: refundAmount,
         refund_date: new Date().toISOString(),
       })
       .eq("id", payment.id);
@@ -53,10 +58,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Update commitment with fee breakdown
+    const { error: commitmentError } = await supabase
+      .from("commitments")
+      .update({
+        platform_fee_amount: platformFee,
+        refund_amount: refundAmount,
+        charity_donation_amount: 0,
+      })
+      .eq("id", commitmentId);
+
+    if (commitmentError) {
+      console.error("Failed to update commitment:", commitmentError);
+    }
+
     return NextResponse.json({
       success: true,
       refundId: refund.id,
-      amount: payment.amount,
+      refundAmount: refundAmount,
+      platformFee: platformFee,
+      originalAmount: payment.amount,
     });
   } catch (error: any) {
     console.error("Refund error:", error);

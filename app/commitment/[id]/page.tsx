@@ -26,6 +26,9 @@ interface Commitment {
   is_public: boolean;
   buddy_email: string | null;
   created_at: string;
+  platform_fee_amount: number | null;
+  charity_donation_amount: number | null;
+  refund_amount: number | null;
 }
 
 interface CheckIn {
@@ -47,6 +50,7 @@ export default function CommitmentDetailsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
   const [checkInLoading, setCheckInLoading] = useState<string | null>(null);
+  const [showFeeBreakdown, setShowFeeBreakdown] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -287,7 +291,7 @@ export default function CommitmentDetailsPage() {
         return;
       }
 
-      alert(`Congratulations! Commitment marked as complete. Your stake of $${refundData.amount} has been refunded.`);
+      alert(`Congratulations! Commitment marked as complete. $${refundData.refundAmount.toFixed(2)} has been refunded (95% of your $${refundData.originalAmount.toFixed(2)} stake). Platform fee: $${refundData.platformFee.toFixed(2)} (5%).`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -501,9 +505,62 @@ export default function CommitmentDetailsPage() {
             <p className="text-2xl text-neutral-950 font-bold">
               ${commitment.stake}
             </p>
-            <p className="text-sm text-gray-600 mt-1">
-              {commitment.commitment_type === "periodic" ? "Returned if you complete 80%+" : "Returned if completed"}
-            </p>
+
+            {/* Show fee breakdown - collapsible for active, always show for completed/failed */}
+            <div className="mt-3">
+              {commitment.status === "active" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowFeeBreakdown(!showFeeBreakdown)}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {showFeeBreakdown ? "Hide fees" : "Show fees"}
+                  </button>
+
+                  {showFeeBreakdown && (
+                    <div className="mt-2 space-y-2">
+                      <div className="text-sm">
+                        <p className="text-gray-700 font-medium mb-1">If you succeed:</p>
+                        <div className="pl-3 space-y-0.5">
+                          <p className="text-gray-600">• Platform fee (5%): ${(commitment.stake * 0.05).toFixed(2)}</p>
+                          <p className="text-green-600 font-medium">• You get back: ${(commitment.stake * 0.95).toFixed(2)}</p>
+                        </div>
+                      </div>
+                      <div className="text-sm">
+                        <p className="text-gray-700 font-medium mb-1">If you fail:</p>
+                        <div className="pl-3 space-y-0.5">
+                          <p className="text-gray-600">• Platform fee (25%): ${(commitment.stake * 0.25).toFixed(2)}</p>
+                          <p className="text-orange-600 font-medium">• Donated to charity: ${(commitment.stake * 0.75).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {commitment.status === "completed" && commitment.refund_amount !== null && (
+                <div className="text-sm bg-green-50 p-3 rounded-lg border border-green-200">
+                  <p className="text-green-800 font-semibold mb-1">✓ Commitment Completed!</p>
+                  <div className="space-y-0.5 text-gray-700">
+                    <p>• Original stake: ${commitment.stake.toFixed(2)}</p>
+                    <p>• Platform fee (5%): ${(commitment.platform_fee_amount || 0).toFixed(2)}</p>
+                    <p className="text-green-600 font-medium">• Refunded to you: ${commitment.refund_amount.toFixed(2)}</p>
+                  </div>
+                </div>
+              )}
+
+              {commitment.status === "failed" && commitment.charity_donation_amount !== null && (
+                <div className="text-sm bg-orange-50 p-3 rounded-lg border border-orange-200">
+                  <p className="text-orange-800 font-semibold mb-1">Commitment Failed</p>
+                  <div className="space-y-0.5 text-gray-700">
+                    <p>• Original stake: ${commitment.stake.toFixed(2)}</p>
+                    <p>• Platform fee (25%): ${(commitment.platform_fee_amount || 0).toFixed(2)}</p>
+                    <p className="text-orange-600 font-medium">• Donated to charity: ${commitment.charity_donation_amount.toFixed(2)}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <Separator />

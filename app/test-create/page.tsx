@@ -95,11 +95,13 @@ export default function TestCreatePage() {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [submittedData, setSubmittedData] = useState<CommitmentFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFeeBreakdown, setShowFeeBreakdown] = useState(false);
 
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CommitmentFormData>({
     resolver: zodResolver(commitmentSchema),
@@ -110,6 +112,9 @@ export default function TestCreatePage() {
       isPublic: false,
     },
   });
+
+  // Watch the stake amount for real-time fee calculation
+  const stakeAmount = watch("stake") || 0;
 
   const onSubmit = async (data: CommitmentFormData) => {
     if (!user) {
@@ -623,6 +628,47 @@ export default function TestCreatePage() {
                 <p className="text-xs text-gray-500">
                   Minimum $5. {commitmentType === "periodic" ? "Returned if you complete 80%+ of instances." : "You'll lose this if you don't follow through."}
                 </p>
+              )}
+
+              {/* Fee breakdown preview - collapsible */}
+              {stakeAmount >= 5 && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowFeeBreakdown(!showFeeBreakdown)}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {showFeeBreakdown ? "Hide fees" : "Show fees"}
+                  </button>
+
+                  {showFeeBreakdown && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+                        Fee Breakdown
+                      </p>
+                      <div className="space-y-1.5 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">If you succeed:</span>
+                          <span className="text-green-600 font-medium">
+                            ${(stakeAmount * 0.95).toFixed(2)} back
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 pl-2">
+                          • Platform fee (5%): ${(stakeAmount * 0.05).toFixed(2)}
+                        </div>
+                        <div className="border-t border-gray-200 pt-1.5 flex justify-between">
+                          <span className="text-gray-600">If you fail:</span>
+                          <span className="text-orange-600 font-medium">
+                            ${(stakeAmount * 0.75).toFixed(2)} to charity
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 pl-2">
+                          • Platform fee (25%): ${(stakeAmount * 0.25).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
