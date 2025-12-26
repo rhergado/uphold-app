@@ -13,13 +13,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate fee breakdown based on new pricing model
-    // Success: 5% platform fee, 95% refunded
-    // Failure: 25% platform fee, 75% donated to charity
-    const successFee = amount * 0.05;
-    const successRefund = amount * 0.95;
-    const failureFee = amount * 0.25;
-    const failureDonation = amount * 0.75;
+    // Calculate fee breakdown based on flat fee pricing model
+    // Success: Flat $4.95 platform fee, remainder refunded
+    // Failure: 30% platform fee, 70% donated to charity
+    const successFee = 4.95;
+    const successRefund = amount - 4.95;
+    const failureFee = amount * 0.30;
+    const failureDonation = amount * 0.70;
 
     // 🎯 CHEAT CODE: $5.55 triggers simulated payment (for testing without real Stripe charges)
     const isTestMode = amount === 5.55;

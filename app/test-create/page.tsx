@@ -26,7 +26,7 @@ const commitmentSchema = z.object({
   outcome: z.string().min(10, "Outcome must be at least 10 characters"),
   dueDate: z.string().optional(),
   dueTime: z.string().min(1, "Time is required"),
-  stake: z.coerce.number().min(5, "Stake must be at least $5 (use $5.55 for test mode)"),
+  stake: z.coerce.number().min(15, "Stake must be at least $15 (use $5.55 for test mode)"),
   verificationMode: z.enum(["integrity", "buddy", "app"]),
   buddyEmail: z.string().email("Invalid email").optional().or(z.literal("")),
   charity: z.string().min(1, "Please select a charity"),
@@ -637,7 +637,7 @@ export default function TestCreatePage() {
                 <Input
                   id="stake"
                   type="number"
-                  min="5"
+                  min="15"
                   step="0.01"
                   placeholder="25"
                   className="text-base pl-8"
@@ -648,12 +648,12 @@ export default function TestCreatePage() {
                 <p className="text-xs text-red-600">{errors.stake.message}</p>
               ) : (
                 <p className="text-xs text-gray-500">
-                  Minimum $5. {commitmentType === "periodic" ? "Returned if you complete 80%+ of instances." : "You'll lose this if you don't follow through."}
+                  Minimum $15. {commitmentType === "periodic" ? "Returned if you complete 80%+ of instances." : "You'll lose this if you don't follow through."}
                 </p>
               )}
 
               {/* Fee breakdown preview - collapsible */}
-              {stakeAmount >= 5 && (
+              {stakeAmount >= 15 && (
                 <div className="mt-2">
                   <button
                     type="button"
@@ -672,20 +672,20 @@ export default function TestCreatePage() {
                         <div className="flex justify-between">
                           <span className="text-gray-600">If you succeed:</span>
                           <span className="text-green-600 font-medium">
-                            ${(stakeAmount * 0.95).toFixed(2)} back
+                            ${(stakeAmount - 4.95).toFixed(2)} back
                           </span>
                         </div>
                         <div className="text-xs text-gray-500 pl-2">
-                          • Platform fee (5%): ${(stakeAmount * 0.05).toFixed(2)}
+                          • Platform fee (flat): $4.95
                         </div>
                         <div className="border-t border-gray-200 pt-1.5 flex justify-between">
                           <span className="text-gray-600">If you fail:</span>
                           <span className="text-orange-600 font-medium">
-                            ${(stakeAmount * 0.75).toFixed(2)} to charity
+                            ${(stakeAmount * 0.70).toFixed(2)} to charity
                           </span>
                         </div>
                         <div className="text-xs text-gray-500 pl-2">
-                          • Platform fee (25%): ${(stakeAmount * 0.25).toFixed(2)}
+                          • Platform fee (30%): ${(stakeAmount * 0.30).toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -735,7 +735,7 @@ export default function TestCreatePage() {
                 <p className="text-xs text-red-600">{errors.charity.message}</p>
               )}
               <p className="text-xs text-gray-500">
-                75% of your stake will be donated here if you {commitmentType === "periodic" ? "don't reach 80% completion" : "fail to complete your commitment"}.
+                70% of your stake will be donated here if you {commitmentType === "periodic" ? "don't reach 80% completion" : "fail to complete your commitment"}.
               </p>
             </div>
 

@@ -59,10 +59,10 @@ export async function POST(request: NextRequest) {
       console.log(`Found payment with status "${payment.status}", processing refund anyway`);
     }
 
-    // Calculate amounts based on new pricing model
-    // Success: 5% platform fee, 95% refunded to user
-    const platformFee = payment.amount * 0.05;
-    const refundAmount = payment.amount * 0.95;
+    // Calculate amounts based on flat fee pricing model
+    // Success: Flat $4.95 platform fee, remainder refunded to user
+    const platformFee = 4.95;
+    const refundAmount = payment.amount - 4.95;
 
     // 🎯 CHEAT CODE: Check if this is test mode ($5.55 stake)
     const isTestMode = payment.amount === 5.55;
@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
         User: ${userId}
         Commitment: ${commitmentId}
         Original Amount: $${payment.amount.toFixed(2)}
-        Refund Amount: $${refundAmount.toFixed(2)} (95%)
-        Platform Fee: $${platformFee.toFixed(2)} (5%)
+        Refund Amount: $${refundAmount.toFixed(2)}
+        Platform Fee: $${platformFee.toFixed(2)} (flat)
         Status: SIMULATED (no real money refunded)`);
 
       refundId = `sim_refund_${Date.now()}`;
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
         User: ${userId}
         Commitment: ${commitmentId}
         Original Amount: $${payment.amount.toFixed(2)}
-        Refund Amount: $${refundAmount.toFixed(2)} (95%)
-        Platform Fee: $${platformFee.toFixed(2)} (5%)`);
+        Refund Amount: $${refundAmount.toFixed(2)}
+        Platform Fee: $${platformFee.toFixed(2)} (flat)`);
 
       try {
         const refund = await stripe.refunds.create({

@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate amounts based on new pricing model
-    // Failure: 25% platform fee, 75% donated to charity
-    const platformFee = payment.amount * 0.25;
-    const donationAmount = payment.amount * 0.75;
+    // Calculate amounts based on flat fee pricing model
+    // Failure: 30% platform fee, 70% donated to charity
+    const platformFee = payment.amount * 0.30;
+    const donationAmount = payment.amount * 0.70;
 
     // Get charity details for logging
     const charityInfo = getCharityById(charity);
@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     // SIMULATED DONATION: Mark as donated without actual transfer
     console.log(`[SIMULATED] Processing donation:
       Charity: ${charityName}
-      Amount: $${donationAmount.toFixed(2)} (75% of $${payment.amount.toFixed(2)})
-      Platform Fee: $${platformFee.toFixed(2)} (25%)
+      Amount: $${donationAmount.toFixed(2)} (70% of $${payment.amount.toFixed(2)})
+      Platform Fee: $${platformFee.toFixed(2)} (30%)
       User: ${userId}
       Commitment: ${commitmentId}
       Status: SIMULATED (no real money transferred)`);
