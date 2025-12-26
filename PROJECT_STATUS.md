@@ -580,7 +580,7 @@ Implemented full transactional email system using Resend API. All 4 email types 
 **⚠️ Important Limitation:**
 - Resend free tier only allows sending emails to the API key owner's email address (`robert.her.delgado@gmail.com`)
 - To send to other recipients, you must verify a custom domain at [resend.com/domains](https://resend.com/domains)
-- For production, verify `uphold.app` domain and change `RESEND_FROM_EMAIL` to `Uphold <noreply@uphold.app>`
+- For production, verify `upholdyourgoal.com` domain and change `RESEND_FROM_EMAIL` to `Uphold <noreply@upholdyourgoal.com>`
 
 ---
 
@@ -785,12 +785,13 @@ Implemented full transactional email system using Resend API. All 4 email types 
 #### 🚀 Production Migration Checklist
 
 **Required Before Launch:**
-1. ⚠️ Verify domain `uphold.app` at [resend.com/domains](https://resend.com/domains)
+1. ⚠️ Verify domain `upholdyourgoal.com` at [resend.com/domains](https://resend.com/domains)
 2. ⚠️ Add DNS records (SPF, DKIM, DMARC) to domain registrar
 3. ⚠️ Wait for domain verification (usually 24-48 hours)
-4. ⚠️ Update `.env.production`: `RESEND_FROM_EMAIL=Uphold <noreply@uphold.app>`
-5. ⚠️ Test all 4 email types with real users after domain verification
-6. ⚠️ Monitor Resend dashboard for delivery rates and bounces
+4. ⚠️ Update `.env.production`: `RESEND_FROM_EMAIL=Uphold <noreply@upholdyourgoal.com>`
+5. ⚠️ Update `NEXT_PUBLIC_APP_URL` to `https://upholdyourgoal.com`
+6. ⚠️ Test all 4 email types with real users after domain verification
+7. ⚠️ Monitor Resend dashboard for delivery rates and bounces
 
 **Optional Improvements:**
 - Add email preferences page for users to manage notifications
