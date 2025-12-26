@@ -30,7 +30,12 @@
       "Bash(timeout /t 5 /nobreak)",
       "Bash(del c:MyAppsupholdappadminsettingspage.tsx)",
       "Bash(timeout /t 2 /nobreak)",
-      "Bash(robocopy:*)"
+      "Bash(robocopy:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(echo:*)"
     ]
   }
 }
