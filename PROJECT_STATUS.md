@@ -1,6 +1,6 @@
 # Uphold - Project Status Document
 
-**Last Updated**: December 26, 2025 - Timezone & Date Display Fixes Complete
+**Last Updated**: December 26, 2025 - Flat Fee Pricing Model Implemented
 **Next.js Version**: 15.3.0 (downgraded from 16.1.1 due to Turbopack crashes)
 **Dev Server**: http://192.168.12.111:3002 (for mobile testing)
 **Current Mode**: Production-Ready with Test Mode Cheat Code
@@ -77,45 +77,56 @@ Uphold is a commitment-based accountability app that helps users follow through 
 - `app/payment/[id]/page.tsx` - Payment page with Stripe Elements
 - `app/payment/success/page.tsx` - Success page with 5s countdown
 - `app/api/create-payment-intent/route.ts` - Creates Stripe payment intent and calculates fees
-- `app/api/process-refund/route.ts` - Processes 95% refund for successful commitments
-- `app/api/process-donation/route.ts` - Processes 75% charity donation for failed commitments
+- `app/api/process-refund/route.ts` - Processes refund minus flat $4.95 fee for successful commitments
+- `app/api/process-donation/route.ts` - Processes 70% charity donation for failed commitments
 
-### 3.5. **NEW: Platform Pricing Model** (COMPLETED - Dec 25, 2025)
-**Implemented a revenue-generating fee structure:**
+### 3.5. **UPDATED: Platform Pricing Model** (UPDATED - Dec 26, 2025)
+**Implemented a flat-fee revenue model to ensure profitability:**
 
 #### **Pricing Structure:**
 - **Success (commitment completed)**:
-  - User gets back: **95%** of stake
-  - Platform fee: **5%**
-  - Charity donation: **0%**
+  - User gets back: **Stake - $4.95** (flat fee)
+  - Platform fee: **$4.95** (flat)
+  - Charity donation: **$0.00**
 
 - **Failure (commitment missed)**:
-  - User gets back: **0%**
-  - Platform fee: **25%**
-  - Charity donation: **75%**
+  - User gets back: **$0.00**
+  - Platform fee: **30%** of stake
+  - Charity donation: **70%** of stake
+
+#### **Stake Limits:**
+- **Minimum**: $15 (ensures meaningful commitment)
+- **Maximum**: $150 (protects profitability on success refunds)
+
+#### **Break-Even Analysis:**
+- **Success break-even**: $150 stake (where Stripe fees = $4.95 platform fee)
+- **Failure break-even**: $1.11 stake (where 30% fee = Stripe fees)
+- **Profitable range**: $15-$150 on all outcomes
 
 #### **Example Calculations:**
 | Stake Amount | Success Refund | Success Fee | Failure Donation | Failure Fee |
 |--------------|----------------|-------------|------------------|-------------|
-| $5.00        | $4.75          | $0.25       | $3.75            | $1.25       |
-| $20.00       | $19.00         | $1.00       | $15.00           | $5.00       |
-| $100.00      | $95.00         | $5.00       | $75.00           | $25.00      |
+| $15.00       | $10.05         | $4.95       | $10.50           | $4.50       |
+| $25.00       | $20.05         | $4.95       | $17.50           | $7.50       |
+| $100.00      | $95.05         | $4.95       | $70.00           | $30.00      |
+| $150.00      | $145.05        | $4.95       | $105.00          | $45.00      |
 
 #### **Database Changes:**
 - Added 3 new columns to `commitments` table:
-  - `platform_fee_amount` (DECIMAL) - Stores actual fee collected (5% or 25%)
-  - `charity_donation_amount` (DECIMAL) - Stores actual charity donation (0% or 75%)
-  - `refund_amount` (DECIMAL) - Stores actual refund to user (95% or 0%)
+  - `platform_fee_amount` (DECIMAL) - Stores actual fee collected ($4.95 flat or 30%)
+  - `charity_donation_amount` (DECIMAL) - Stores actual charity donation (0% or 70%)
+  - `refund_amount` (DECIMAL) - Stores actual refund to user (stake - $4.95 or $0)
 - Migration file: `database_migrations/add_fee_columns.sql`
 
 #### **API Updates:**
-1. **`/api/create-payment-intent`** - Calculates and returns fee breakdown
-2. **`/api/process-refund`** - Refunds 95%, keeps 5% platform fee, updates commitment
-3. **`/api/process-donation`** - Donates 75% to charity, keeps 25% platform fee, updates commitment
+1. **`/api/create-payment-intent`** - Calculates and returns fee breakdown with flat $4.95 success fee and 30/70 failure split
+2. **`/api/process-refund`** - Refunds (stake - $4.95), keeps $4.95 platform fee, updates commitment
+3. **`/api/process-donation`** - Donates 70% to charity, keeps 30% platform fee, updates commitment
 
 #### **UI Updates:**
 1. **Create Commitment Form** (`app/test-create/page.tsx`):
-   - Collapsible "Show fees" button (black text)
+   - Minimum stake: $15, Maximum stake: $150
+   - Collapsible "Show fees" button displays flat $4.95 success fee and 30/70 failure split
    - Real-time fee preview updates as user types stake amount
    - Shows both success and failure scenarios
 
@@ -550,6 +561,42 @@ middleware.ts                          # Simplified (allows all routes)
 ---
 
 ## 🆕 Recent Changes (December 26, 2025)
+
+### Flat Fee Pricing Model Implementation (PROFITABILITY UPDATE)
+**What Changed:**
+- Switched from percentage-based pricing to flat $4.95 success fee
+- Updated failure split from 75/25 to 70/30 (charity/platform)
+- Added minimum stake of $15 and maximum stake of $150
+- Ensures profitability on all transactions after Stripe fees
+
+**Why This Change:**
+The previous 5% success fee was unprofitable on stakes below $6 due to Stripe's non-refundable $0.30 fee on refunds. The new flat fee model guarantees profitability across all stake amounts while remaining competitive.
+
+**Pricing Details:**
+- **Success**: Flat $4.95 fee (user gets stake - $4.95 back)
+- **Failure**: 30% platform fee, 70% charity donation
+- **Stake Range**: $15 minimum, $150 maximum
+- **Break-even**: $150 is the exact break-even point where Stripe fees equal platform revenue on success
+
+**Profitability Analysis:**
+| Stake | Success Profit | Failure Profit | Notes |
+|-------|---------------|----------------|-------|
+| $15   | $3.91         | $3.76          | Minimum stake |
+| $25   | $3.62         | $6.47          | Sweet spot |
+| $100  | $1.45         | $26.80         | High profit on failure |
+| $150  | $0.00         | $40.50         | Break-even on success |
+
+**Files Modified:**
+- `app/api/create-payment-intent/route.ts` - Updated fee calculations
+- `app/api/process-refund/route.ts` - Changed to flat $4.95 fee refund logic
+- `app/api/process-donation/route.ts` - Updated to 30/70 split
+- `app/test-create/page.tsx` - Added min/max stake validation and updated fee preview UI
+
+**Commit Messages:**
+- `feat: implement flat $4.95 fee pricing model and raise minimum to $15`
+- `feat: add $150 maximum stake limit to prevent unprofitable refunds`
+
+---
 
 ### Timezone & Date Display Fixes (CRITICAL BUG FIXES)
 **What Changed:**
