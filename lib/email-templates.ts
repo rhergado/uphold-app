@@ -122,7 +122,7 @@ export function getDonationReceiptEmail(params: DonationReceiptEmailParams) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions? Reply to this email or contact us at support@uphold.com</p>
+    <p>Questions? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
     <p style="margin-top: 10px;">
       <a href="https://uphold.com/terms" style="color: #2563eb; text-decoration: none;">Terms</a> •
       <a href="https://uphold.com/privacy" style="color: #2563eb; text-decoration: none;">Privacy</a> •
@@ -335,7 +335,7 @@ export function getRefundProcessedEmail(params: RefundProcessedEmailParams) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions about your refund? Reply to this email and we'll help.</p>
+    <p>Questions about your refund? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
   </div>
 
 </body>

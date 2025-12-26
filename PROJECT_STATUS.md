@@ -595,6 +595,8 @@ Implemented full transactional email system using Resend API. All 4 email types 
 2. **Real Payment Success**: Sent on payment success page load in `app/payment/success/page.tsx:15-41`
 3. **Stripe Webhook**: Sent when webhook receives payment confirmation in `app/api/stripe-webhook/route.ts:91-105`
 
+**Support Contact:** All emails include support contact: `upholdyourgoal@gmail.com`
+
 **Email Content:**
 - ✅ "Payment Confirmed" header with green checkmark
 - ✅ Personalized greeting with user's full name
@@ -744,6 +746,8 @@ Implemented full transactional email system using Resend API. All 4 email types 
 
 **Modified:**
 - `lib/resend.ts` - Enhanced error logging and Resend API error detection
+- `lib/email-templates.ts` - All email footers updated with support email (upholdyourgoal@gmail.com)
+- `app/api/send-welcome-email/route.ts` - Welcome email footer updated with support email
 - `app/dashboard/page.tsx` - Fixed days left calculation bug
 - `app/test-create/page.tsx` - Added payment confirmation email trigger for test mode
 - `app/payment/success/page.tsx` - Added payment confirmation email trigger
@@ -757,28 +761,32 @@ Implemented full transactional email system using Resend API. All 4 email types 
 #### ✅ Testing Results
 
 **Payment Confirmation Email:**
-- ✅ Test mode ($0.07 stake) sends successfully
+- ✅ Test mode ($5.55 stake) sends successfully
 - ✅ Email received with correct branding
 - ✅ Deadline formatted correctly
 - ✅ User name displays properly
 - ✅ Transaction ID shows correctly
 - ✅ All links functional
+- ✅ Support email (upholdyourgoal@gmail.com) included in footer
 
 **Welcome Email:**
 - ✅ Tested via curl command
 - ✅ Email received successfully
 - ✅ All content renders correctly
 - ✅ CTA button works
+- ✅ Support email (upholdyourgoal@gmail.com) included in footer
 
 **Refund Email:**
 - ✅ Tested by completing a commitment
 - ✅ Email received with correct refund calculation
 - ✅ Platform fee breakdown clear
 - ✅ Simulated refund ID shown for test mode
+- ✅ Support email (upholdyourgoal@gmail.com) included in footer
 
 **Donation Receipt Email:**
 - ✅ Previously tested from admin dashboard
 - ✅ Working correctly with batch processing
+- ✅ Support email (upholdyourgoal@gmail.com) included in footer
 
 ---
 
@@ -819,6 +827,12 @@ Implemented full transactional email system using Resend API. All 4 email types 
 ---
 
 **Status:** ✅ **COMPLETE - All 4 email types working and tested**
+
+**Additional Updates (December 26, 2025):**
+- ✅ Support email added to all templates: `upholdyourgoal@gmail.com`
+- ✅ Test mode stake updated: $5.55 (previously $0.07)
+- ✅ Domain verification in progress: `upholdyourgoal.com`
+- ✅ DNS records added to Squarespace (DKIM, SPF, DMARC)
 
 **Git Commit:** Pending (see below)
 

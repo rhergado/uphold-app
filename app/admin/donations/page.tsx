@@ -256,11 +256,18 @@ export default function AdminDonationsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-gray-900">Admin: Charity Donations</h1>
-            <Link href="/admin/settings">
-              <Button variant="outline" size="sm">
-                ⚙️ Settings
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link href="/dashboard">
+                <Button variant="outline" size="sm">
+                  ← Back to Dashboard
+                </Button>
+              </Link>
+              <Link href="/admin/settings">
+                <Button variant="outline" size="sm">
+                  ⚙️ Settings
+                </Button>
+              </Link>
+            </div>
           </div>
           <p className="mt-2 text-gray-600">
             Review and manually process charity donations from failed commitments

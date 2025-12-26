@@ -20,10 +20,10 @@
 
 ---
 
-## ✅ Core User Flow ($0.07 Test Mode)
+## ✅ Core User Flow ($5.55 Test Mode)
 
 - [ ] Sign up new account (use temp email)
-- [ ] Create commitment with $0.07 stake
+- [ ] Create commitment with $5.55 stake
 - [ ] Verify alert: "🎯 Test mode activated!"
 - [ ] See commitment in dashboard as "Active"
 - [ ] No payment page appeared (skipped)
@@ -41,7 +41,7 @@
 
 ## ✅ Failure Path
 
-- [ ] Create commitment with $0.07 stake
+- [ ] Create commitment with $5.55 stake
 - [ ] Wait for deadline to pass (or manually set past date in DB)
 - [ ] System auto-marks as failed
 - [ ] Go to `/admin/donations`
@@ -66,7 +66,7 @@
 
 ## ✅ Mobile Testing
 
-- [ ] Access http://192.168.12.111:3002 on phone
+- [ ] Access http://192.168.12.111:3001 on phone (or current dev server port)
 - [ ] Sign up on mobile
 - [ ] Create commitment on mobile
 - [ ] Verify payment flow works
@@ -106,7 +106,7 @@ NEXT_PUBLIC_APP_URL=https://upholdyourgoal.com
 - [ ] Connect to Vercel
 - [ ] Add environment variables
 - [ ] Deploy
-- [ ] Test deployed site with $0.07 commitment
+- [ ] Test deployed site with $5.55 commitment
 - [ ] Verify admin dashboard works
 
 ---

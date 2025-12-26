@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions? Reply to this email and we'll help!</p>
+    <p>Questions? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
     <p style="margin-top: 10px;">
       <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/how-it-works" style="color: #2563eb;">How It Works</a> •
       <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/terms" style="color: #2563eb;">Terms</a> •
