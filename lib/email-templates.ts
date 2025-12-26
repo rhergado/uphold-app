@@ -64,7 +64,7 @@ export function getDonationReceiptEmail(params: DonationReceiptEmailParams) {
         </tr>
         <tr style="border-bottom: 1px solid #e5e7eb;">
           <td style="padding: 12px 0; color: #666;">Donation Amount:</td>
-          <td style="padding: 12px 0; text-align: right; font-weight: 600; color: #10b981;">$${donationAmount.toFixed(2)} (75%)</td>
+          <td style="padding: 12px 0; text-align: right; font-weight: 600; color: #10b981;">$${donationAmount.toFixed(2)} (70%)</td>
         </tr>
         <tr style="border-bottom: 1px solid #e5e7eb;">
           <td style="padding: 12px 0; color: #666;">Charity:</td>
@@ -104,8 +104,8 @@ export function getDonationReceiptEmail(params: DonationReceiptEmailParams) {
     </p>
     <ul style="font-size: 14px; color: #475569; margin: 0; padding-left: 20px;">
       <li>Original stake: $${originalStake.toFixed(2)}</li>
-      <li>Donated to ${charityName}: $${donationAmount.toFixed(2)} (75%)</li>
-      <li>Platform fee: $${(originalStake * 0.25).toFixed(2)} (25%)</li>
+      <li>Donated to ${charityName}: $${donationAmount.toFixed(2)} (70%)</li>
+      <li>Platform fee: $${(originalStake * 0.30).toFixed(2)} (30%)</li>
     </ul>
   </div>
 
@@ -150,8 +150,8 @@ interface PaymentConfirmationEmailParams {
 
 export function getPaymentConfirmationEmail(params: PaymentConfirmationEmailParams) {
   const { userName, commitmentIntention, stake, deadline, stripeTransactionId, commitmentId } = params;
-  const platformFee = stake * 0.05;
-  const potentialRefund = stake * 0.95;
+  const platformFee = 4.95;
+  const potentialRefund = stake - 4.95;
 
   return {
     subject: `Payment Confirmed: Your ${stake.toFixed(2)} commitment is active`,
@@ -206,10 +206,10 @@ export function getPaymentConfirmationEmail(params: PaymentConfirmationEmailPara
     <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #1e40af;">What Happens Next?</h3>
       <p style="margin: 10px 0; font-size: 14px;">
-        <strong style="color: #10b981;">If you succeed:</strong> You'll get $${potentialRefund.toFixed(2)} refunded (95% of your stake). We keep $${platformFee.toFixed(2)} as a platform fee.
+        <strong style="color: #10b981;">If you succeed:</strong> You'll get $${potentialRefund.toFixed(2)} refunded (your stake minus $${platformFee.toFixed(2)} flat platform fee).
       </p>
       <p style="margin: 10px 0; font-size: 14px;">
-        <strong style="color: #f59e0b;">If you don't complete it:</strong> 75% ($${(stake * 0.75).toFixed(2)}) goes to your chosen charity. We keep 25% ($${(stake * 0.25).toFixed(2)}) as a platform fee.
+        <strong style="color: #f59e0b;">If you don't complete it:</strong> 70% ($${(stake * 0.70).toFixed(2)}) goes to your chosen charity. We keep 30% ($${(stake * 0.30).toFixed(2)}) as a platform fee.
       </p>
     </div>
   </div>
@@ -291,11 +291,11 @@ export function getRefundProcessedEmail(params: RefundProcessedEmailParams) {
           <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">$${originalStake.toFixed(2)}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">Platform Fee (5%):</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">Platform Fee (flat):</td>
           <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right; color: #666;">-$${platformFee.toFixed(2)}</td>
         </tr>
         <tr style="background: #f0fdf4;">
-          <td style="padding: 12px 8px; font-weight: 700; color: #10b981;">Refund Amount (95%):</td>
+          <td style="padding: 12px 8px; font-weight: 700; color: #10b981;">Refund Amount:</td>
           <td style="padding: 12px 8px; text-align: right; font-weight: 700; font-size: 18px; color: #10b981;">$${refundAmount.toFixed(2)}</td>
         </tr>
       </table>
@@ -412,12 +412,12 @@ export function getCommitmentReminderEmail(params: CommitmentReminderEmailParams
       <h3 style="margin-top: 0; color: #1f2937;">What's at Stake?</h3>
       <div style="padding: 12px; background: #f0fdf4; border-radius: 6px; margin: 10px 0;">
         <p style="margin: 0; font-size: 14px;">
-          <strong style="color: #10b981;">Complete it:</strong> Get $${(stake * 0.95).toFixed(2)} refunded
+          <strong style="color: #10b981;">Complete it:</strong> Get $${(stake - 4.95).toFixed(2)} refunded
         </p>
       </div>
       <div style="padding: 12px; background: #fef2f2; border-radius: 6px; margin: 10px 0;">
         <p style="margin: 0; font-size: 14px;">
-          <strong style="color: #dc2626;">Miss it:</strong> $${(stake * 0.75).toFixed(2)} donated to charity
+          <strong style="color: #dc2626;">Miss it:</strong> $${(stake * 0.70).toFixed(2)} donated to charity
         </p>
       </div>
     </div>

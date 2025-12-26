@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { stripe } from "@/lib/stripe";
+import { sendEmail } from "@/lib/resend";
+import { getRefundProcessedEmail } from "@/lib/email-templates";
 
 /**
  * REAL REFUND PROCESSING (Production Mode)
@@ -131,17 +133,51 @@ export async function POST(request: NextRequest) {
     }
 
     // Update commitment with fee breakdown
-    const { error: commitmentError } = await supabase
+    const { data: commitment, error: commitmentError } = await supabase
       .from("commitments")
       .update({
         platform_fee_amount: platformFee,
         refund_amount: refundAmount,
         charity_donation_amount: 0,
       })
-      .eq("id", commitmentId);
+      .eq("id", commitmentId)
+      .select()
+      .single();
 
     if (commitmentError) {
       console.error("Failed to update commitment:", commitmentError);
+    }
+
+    // Get user details for email
+    const { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    // Send refund confirmation email
+    if (user && commitment) {
+      try {
+        const emailTemplate = getRefundProcessedEmail({
+          userName: user.name,
+          commitmentIntention: commitment.intention,
+          originalStake: payment.amount,
+          refundAmount: refundAmount,
+          platformFee: platformFee,
+          refundId: refundId,
+        });
+
+        await sendEmail({
+          to: user.email,
+          subject: emailTemplate.subject,
+          html: emailTemplate.html,
+        });
+
+        console.log(`[Email] Refund confirmation sent to ${user.email}`);
+      } catch (emailError) {
+        console.error("Failed to send refund email:", emailError);
+        // Don't fail refund if email fails
+      }
     }
 
     return NextResponse.json({

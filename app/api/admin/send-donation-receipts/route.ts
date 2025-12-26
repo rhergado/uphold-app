@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/resend";
 import { getDonationReceiptEmail } from "@/lib/email-templates";
 import { getCharityById } from "@/lib/charities";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * ADMIN API: Send donation receipt emails to users
@@ -168,14 +166,21 @@ export async function POST(request: NextRequest) {
         });
 
         // Send email via Resend
-        const { data: emailData, error: emailError } = await resend.emails.send({
-          from: "Uphold <onboarding@resend.dev>", // Using Resend's test domain (free tier)
-          to: user.email,
-          subject: emailTemplate.subject,
-          html: emailTemplate.html,
-        });
+        try {
+          const emailResult = await sendEmail({
+            to: user.email,
+            subject: emailTemplate.subject,
+            html: emailTemplate.html,
+          });
 
-        if (emailError) {
+          console.log(`[EMAIL SENT] Donation receipt to ${user.email} for payment ${payment.id}`);
+          return {
+            success: true,
+            paymentId: payment.id,
+            userEmail: user.email,
+            emailId: emailResult.data?.id
+          };
+        } catch (emailError: any) {
           console.error(`Failed to send email for payment ${payment.id}:`, emailError);
           return {
             success: false,
@@ -184,14 +189,6 @@ export async function POST(request: NextRequest) {
             error: emailError.message
           };
         }
-
-        console.log(`[EMAIL SENT] Donation receipt to ${user.email} for payment ${payment.id}`);
-        return {
-          success: true,
-          paymentId: payment.id,
-          userEmail: user.email,
-          emailId: emailData?.id
-        };
       } catch (err: any) {
         console.error(`Error processing payment ${payment.id}:`, err);
         return {

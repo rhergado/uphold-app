@@ -26,7 +26,10 @@ const commitmentSchema = z.object({
   outcome: z.string().min(10, "Outcome must be at least 10 characters"),
   dueDate: z.string().optional(),
   dueTime: z.string().min(1, "Time is required"),
-  stake: z.coerce.number().min(15, "Stake must be at least $15 (use $5.55 for test mode)").max(150, "Stake cannot exceed $150"),
+  stake: z.coerce.number().refine(
+    (val) => val === 5.55 || (val >= 15 && val <= 150),
+    { message: "Stake must be $15-$150 (or exactly $5.55 for test mode)" }
+  ),
   verificationMode: z.enum(["integrity", "buddy", "app"]),
   buddyEmail: z.string().email("Invalid email").optional().or(z.literal("")),
   charity: z.string().min(1, "Please select a charity"),
@@ -197,6 +200,19 @@ export default function TestCreatePage() {
         }
 
         console.log("[CHEAT CODE] Payment simulated with $5.55 - no real charge");
+
+        // Send payment confirmation email for test mode
+        fetch("/api/send-payment-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            commitmentId: insertedCommitment.id,
+            userId: user.id,
+          }),
+        }).catch((err) => {
+          console.error("Failed to send payment confirmation email:", err);
+        });
+
         alert("🎯 Test mode activated! Payment simulated (no real charge). Commitment created!");
         router.push("/dashboard");
       } else {
@@ -637,7 +653,7 @@ export default function TestCreatePage() {
                 <Input
                   id="stake"
                   type="number"
-                  min="15"
+                  min="5.55"
                   max="150"
                   step="0.01"
                   placeholder="25"
@@ -649,7 +665,7 @@ export default function TestCreatePage() {
                 <p className="text-xs text-red-600">{errors.stake.message}</p>
               ) : (
                 <p className="text-xs text-gray-500">
-                  Minimum $15, maximum $150. {commitmentType === "periodic" ? "Returned if you complete 80%+ of instances." : "You'll lose this if you don't follow through."}
+                  $15-$150 range (or $5.55 for test mode). {commitmentType === "periodic" ? "Returned if you complete 80%+ of instances." : "You'll lose this if you don't follow through."}
                 </p>
               )}
 

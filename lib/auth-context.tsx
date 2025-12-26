@@ -68,6 +68,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(newUser);
       localStorage.setItem("uphold_user", JSON.stringify(newUser));
 
+      // Send welcome email (async, don't wait for it)
+      fetch("/api/send-welcome-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, name: data.name }),
+      }).catch((err) => {
+        console.error("Failed to send welcome email:", err);
+        // Don't fail signup if email fails
+      });
+
       return true;
     } catch (error) {
       console.error("Signup error:", error);

@@ -13,6 +13,33 @@ export default function PaymentSuccessPage() {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
+    // Send payment confirmation email
+    const sendConfirmationEmail = async () => {
+      if (!commitmentId) return;
+
+      // Get user ID from localStorage (auth context)
+      const storedUser = localStorage.getItem("uphold_user");
+      if (!storedUser) return;
+
+      const user = JSON.parse(storedUser);
+
+      try {
+        await fetch("/api/send-payment-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            commitmentId: commitmentId,
+            userId: user.id,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to send payment confirmation email:", error);
+        // Don't fail the page if email fails
+      }
+    };
+
+    sendConfirmationEmail();
+
     let timer: NodeJS.Timeout;
 
     const startCountdown = () => {
@@ -34,7 +61,7 @@ export default function PaymentSuccessPage() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, []);
+  }, [commitmentId]);
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#f8f7f4] px-6">
