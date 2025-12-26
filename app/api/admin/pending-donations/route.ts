@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch all failed commitments with user details
+    // Fetch all failed commitments with user details and payment info
+    // Use the specific foreign key relationship to avoid ambiguity
     const { data: failedCommitments, error } = await supabase
       .from("commitments")
       .select(`
@@ -46,7 +47,14 @@ export async function GET(request: NextRequest) {
         status,
         due_date,
         created_at,
-        users!inner(email)
+        users!inner(email),
+        payments!payments_commitment_id_fkey!inner(
+          id,
+          status,
+          donation_processed_at,
+          donation_batch_id,
+          donation_receipt_url
+        )
       `)
       .eq("status", "failed")
       .order("due_date", { ascending: true });
@@ -59,20 +67,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Transform data to include user email
-    const donations = failedCommitments.map((commitment: any) => ({
-      id: commitment.id,
-      user_id: commitment.user_id,
-      user_email: commitment.users?.email || "unknown@email.com",
-      goal: commitment.intention,
-      stake: commitment.stake,
-      charity: commitment.charity,
-      charity_donation_amount: commitment.charity_donation_amount || commitment.stake * 0.75,
-      platform_fee_amount: commitment.platform_fee_amount || commitment.stake * 0.25,
-      status: commitment.status,
-      due_date: commitment.due_date,
-      failed_at: commitment.created_at, // You might want to add a specific failed_at timestamp
-    }));
+    // Transform data to include user email and payment info
+    const donations = failedCommitments.map((commitment: any) => {
+      // Get the first payment (should only be one per commitment)
+      const payment = Array.isArray(commitment.payments) ? commitment.payments[0] : commitment.payments;
+
+      return {
+        id: commitment.id,
+        payment_id: payment?.id || null,
+        user_id: commitment.user_id,
+        user_email: commitment.users?.email || "unknown@email.com",
+        goal: commitment.intention,
+        stake: commitment.stake,
+        charity: commitment.charity,
+        charity_donation_amount: commitment.charity_donation_amount || commitment.stake * 0.75,
+        platform_fee_amount: commitment.platform_fee_amount || commitment.stake * 0.25,
+        status: commitment.status,
+        due_date: commitment.due_date,
+        failed_at: commitment.created_at,
+        donation_processed_at: payment?.donation_processed_at || null,
+        donation_batch_id: payment?.donation_batch_id || null,
+        donation_receipt_url: payment?.donation_receipt_url || null,
+      };
+    });
 
     return NextResponse.json({
       success: true,

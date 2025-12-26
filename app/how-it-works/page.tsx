@@ -104,15 +104,78 @@ export default function HowItWorksPage() {
                 5
               </div>
               <h3 className="text-xl font-semibold text-neutral-900">
-                Get Your Money Back
+                What Happens to Your Money
               </h3>
             </div>
-            <p className="text-sm text-gray-700 mb-2">
-              <span className="font-semibold text-green-700">✓ Success:</span> Your stake is returned in full
-            </p>
-            <p className="text-sm text-gray-700">
-              <span className="font-semibold text-red-700">✗ Failure:</span> Your stake is donated to charity
-            </p>
+            <div className="space-y-3">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm font-semibold text-green-800 mb-1">
+                  ✓ If You Succeed:
+                </p>
+                <p className="text-sm text-green-700">
+                  You get 95% of your stake refunded within 24 hours. We keep 5% as a platform fee.
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  Example: $20 stake → $19.00 refunded, $1.00 platform fee
+                </p>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <p className="text-sm font-semibold text-orange-800 mb-1">
+                  ✗ If You Don't Complete It:
+                </p>
+                <p className="text-sm text-orange-700">
+                  75% goes to your chosen charity. We keep 25% as a platform fee.
+                </p>
+                <p className="text-xs text-orange-600 mt-1">
+                  Example: $20 stake → $15.00 to charity, $5.00 platform fee
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust & Security */}
+        <div className="bg-white border-2 border-gray-200 rounded-xl p-6 mb-8">
+          <h3 className="text-lg font-semibold text-neutral-900 mb-4 text-center">
+            🔒 Your Money is Secure
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Powered by Stripe</p>
+                <p className="text-gray-600">All payments processed securely through Stripe, trusted by millions of businesses worldwide</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Transparent Fees</p>
+                <p className="text-gray-600">You see exactly where every dollar goes before you commit</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Automatic Refunds</p>
+                <p className="text-gray-600">When you succeed, your refund is processed immediately - no waiting, no hassle</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Real Charity Donations</p>
+                <p className="text-gray-600">Choose from vetted charities: Doctors Without Borders, UNICEF, or Best Friends Animal Society</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -132,6 +195,77 @@ export default function HowItWorksPage() {
           </p>
         </div>
 
+        {/* FAQ */}
+        <div className="mb-10">
+          <h3 className="text-2xl font-semibold text-neutral-900 mb-6 text-center">
+            Frequently Asked Questions
+          </h3>
+          <div className="space-y-4">
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                Is my money safe?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Yes. All payments are processed through Stripe, one of the world's most trusted payment processors.
+                We never store your payment information. When you create a commitment, Stripe charges your card immediately.
+                When you succeed, Stripe processes your refund directly back to your original payment method.
+              </p>
+            </details>
+
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                How do I know my refund will actually be processed?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Refunds are automatic. When you mark a commitment as complete, our system immediately triggers a Stripe refund.
+                You'll receive an email confirmation with your Stripe transaction ID. Refunds typically appear in your account within 5-10 business days,
+                depending on your bank.
+              </p>
+            </details>
+
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                Do charity donations actually happen?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Yes. When a commitment fails, 75% of your stake goes directly to the charity you selected (Doctors Without Borders, UNICEF, or Best Friends Animal Society).
+                All donations are processed through verified charity accounts. You can request a donation receipt for tax purposes.
+              </p>
+            </details>
+
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                Why do you charge platform fees?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Platform fees cover our operating costs: Stripe payment processing fees (2.9% + $0.30 per transaction),
+                server hosting, email delivery, and ongoing development. Our fee model encourages you to succeed - we make less when you fail,
+                so we're genuinely rooting for you!
+              </p>
+            </details>
+
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                Can I get a full refund if I change my mind?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Commitments are binding once payment is made - that's what makes them effective! However, if you have extenuating circumstances
+                (medical emergency, natural disaster, etc.), please contact support and we'll review your case individually.
+              </p>
+            </details>
+
+            <details className="bg-gray-50 rounded-lg p-4 cursor-pointer">
+              <summary className="font-semibold text-gray-900 text-sm">
+                What payment methods do you accept?
+              </summary>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover) through Stripe.
+                We do not currently accept PayPal, Venmo, or cryptocurrency.
+              </p>
+            </details>
+          </div>
+        </div>
+
         {/* CTA */}
         <div className="text-center space-y-4">
           <Link
@@ -142,6 +276,21 @@ export default function HowItWorksPage() {
           </Link>
           <Link href="/" className="block text-gray-600 hover:text-blue-600 transition-colors text-sm">
             ← Back to Home
+          </Link>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500">
+          <Link href="/terms" className="hover:text-blue-600 transition-colors">
+            Terms of Service
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/refund-policy" className="hover:text-blue-600 transition-colors">
+            Refund Policy
           </Link>
         </div>
       </div>

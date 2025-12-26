@@ -353,6 +353,21 @@ export default function CommunityPage() {
             Load More
           </Button>
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500">
+          <Link href="/terms" className="hover:text-blue-600 transition-colors">
+            Terms of Service
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/refund-policy" className="hover:text-blue-600 transition-colors">
+            Refund Policy
+          </Link>
+        </div>
       </div>
     </main>
   );

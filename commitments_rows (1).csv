@@ -1,0 +1,2 @@
+id,user_id,commitment_type,intention,outcome,stake,charity,verification_mode,buddy_email,is_public,due_date,due_time,days_of_week,duration_weeks,start_date,status,created_at,completed_at,payment_id,platform_fee_amount,charity_donation_amount,refund_amount
+652072e2-76db-4150-9752-e94b5d25f479,8ff225dd-3239-4257-a122-53a2b4238e97,one-time,Test expire #6,let it expire,5.55,doctors-without-borders,integrity,,false,2025-12-26,12:00:00,[],,,failed,2025-12-26 16:59:04.64668+00,,,1.39,4.16,0.00

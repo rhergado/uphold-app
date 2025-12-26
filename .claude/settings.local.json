@@ -27,7 +27,10 @@
       "Bash(set BACKUP_NAME=%BACKUP_NAME: =0%)",
       "Bash(xcopy:*)",
       "Bash(curl:*)",
-      "Bash(timeout /t 5 /nobreak)"
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(del c:MyAppsupholdappadminsettingspage.tsx)",
+      "Bash(timeout /t 2 /nobreak)",
+      "Bash(robocopy:*)"
     ]
   }
 }

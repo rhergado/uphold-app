@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,7 +26,7 @@ const commitmentSchema = z.object({
   outcome: z.string().min(10, "Outcome must be at least 10 characters"),
   dueDate: z.string().optional(),
   dueTime: z.string().min(1, "Time is required"),
-  stake: z.coerce.number().min(5, "Stake must be at least $5"),
+  stake: z.coerce.number().min(5, "Stake must be at least $5 (use $5.55 for test mode)"),
   verificationMode: z.enum(["integrity", "buddy", "app"]),
   buddyEmail: z.string().email("Invalid email").optional().or(z.literal("")),
   charity: z.string().min(1, "Please select a charity"),
@@ -50,15 +51,15 @@ const commitmentSchema = z.object({
   message: "Due date is required",
   path: ["dueDate"],
 }).refine((data) => {
-  if (data.commitmentType === "one-time" && data.dueDate) {
-    const selectedDate = new Date(data.dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return selectedDate >= today;
+  if (data.commitmentType === "one-time" && data.dueDate && data.dueTime) {
+    // Combine date and time to check if it's in the future
+    const selectedDateTime = new Date(`${data.dueDate}T${data.dueTime}:00`);
+    const now = new Date();
+    return selectedDateTime > now;
   }
   return true;
 }, {
-  message: "Due date must be today or in the future",
+  message: "Due date and time must be in the future",
   path: ["dueDate"],
 }).refine((data) => {
   if (data.commitmentType === "periodic") {
@@ -130,7 +131,9 @@ export default function TestCreatePage() {
       // Calculate due_date based on commitment type
       let dueDate;
       if (data.commitmentType === "one-time") {
-        dueDate = `${data.dueDate}T${data.dueTime}:00`;
+        // For one-time commitments, dueDate is handled separately
+        // We don't need to format it here since we save just the date
+        dueDate = data.dueDate;
       } else {
         // For periodic, use the end date
         const start = new Date(data.startDate!);
@@ -145,7 +148,7 @@ export default function TestCreatePage() {
         commitment_type: data.commitmentType,
         intention: data.intention,
         outcome: data.outcome,
-        due_date: dueDate,
+        due_date: data.commitmentType === "one-time" ? data.dueDate : dueDate, // For one-time, save just the date
         stake: data.stake,
         verification_mode: data.verificationMode,
         buddy_email: data.buddyEmail || null,
@@ -175,12 +178,29 @@ export default function TestCreatePage() {
 
       console.log("Commitment created successfully:", insertedCommitment);
 
-      // Test mode: Skip payment for stakes of $5 (for testing purposes)
-      if (data.stake === 5) {
-        alert("Test mode: Payment skipped. Commitment created!");
+      // 🎯 CHEAT CODE: $5.55 stake bypasses real payment (for testing without bank charges)
+      if (data.stake === 5.55) {
+        // Create a simulated payment record for testing
+        const { error: paymentError } = await supabase
+          .from("payments")
+          .insert([{
+            commitment_id: insertedCommitment.id,
+            user_id: user.id,
+            amount: data.stake,
+            currency: "usd",
+            stripe_payment_intent_id: `test_pi_${Date.now()}`,
+            status: "succeeded", // Mark as succeeded for testing
+          }]);
+
+        if (paymentError) {
+          console.error("Error creating test payment:", paymentError);
+        }
+
+        console.log("[CHEAT CODE] Payment simulated with $5.55 - no real charge");
+        alert("🎯 Test mode activated! Payment simulated (no real charge). Commitment created!");
         router.push("/dashboard");
       } else {
-        // Redirect to payment page
+        // Redirect to payment page for real Stripe payment
         router.push(`/payment/${insertedCommitment.id}`);
       }
     } catch (error) {
@@ -618,6 +638,7 @@ export default function TestCreatePage() {
                   id="stake"
                   type="number"
                   min="5"
+                  step="0.01"
                   placeholder="25"
                   className="text-base pl-8"
                   {...register("stake")}
@@ -847,8 +868,23 @@ export default function TestCreatePage() {
             size="lg"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Creating..." : "Continue"}
+            {isSubmitting ? "Creating..." : "Create"}
           </Button>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500">
+          <Link href="/terms" className="hover:text-blue-600 transition-colors">
+            Terms of Service
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/refund-policy" className="hover:text-blue-600 transition-colors">
+            Refund Policy
+          </Link>
         </div>
       </div>
     </main>

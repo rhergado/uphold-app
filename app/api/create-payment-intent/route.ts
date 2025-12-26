@@ -21,18 +21,32 @@ export async function POST(request: NextRequest) {
     const failureFee = amount * 0.25;
     const failureDonation = amount * 0.75;
 
-    // Create a PaymentIntent with Stripe
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert dollars to cents
-      currency: "usd",
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      metadata: {
-        userId,
-        commitmentId,
-      },
-    });
+    // 🎯 CHEAT CODE: $5.55 triggers simulated payment (for testing without real Stripe charges)
+    const isTestMode = amount === 5.55;
+
+    let paymentIntent;
+
+    if (isTestMode) {
+      // SIMULATED MODE: Create fake payment intent for testing
+      console.log("[SIMULATED PAYMENT] Cheat code activated with $5.55 stake");
+      paymentIntent = {
+        id: `test_pi_${Date.now()}`,
+        client_secret: `test_secret_${Date.now()}`,
+      };
+    } else {
+      // REAL MODE: Create actual PaymentIntent with Stripe
+      paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert dollars to cents
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          userId,
+          commitmentId,
+        },
+      });
+    }
 
     // Update commitment with fee calculations
     const { error: commitmentError } = await supabase
@@ -63,7 +77,7 @@ export async function POST(request: NextRequest) {
         amount: amount,
         currency: "usd",
         stripe_payment_intent_id: paymentIntent.id,
-        status: "pending",
+        status: isTestMode ? "succeeded" : "pending", // Auto-succeed test payments
       }]);
 
     if (dbError) {
@@ -77,6 +91,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      isTestMode, // Tell the frontend this is test mode
       feeBreakdown: {
         stake: amount,
         success: {

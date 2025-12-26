@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { isAdminEmail } from "@/lib/admin-config";
 
 interface Commitment {
   id: string;
@@ -111,9 +112,10 @@ export default function DashboardPage() {
 
       // For one-time commitments, check if due_date has passed
       if (commitment.commitment_type === "one-time") {
-        const dueDate = new Date(commitment.due_date);
+        // Combine due_date and due_time into a single datetime
+        const dueDateTime = new Date(`${commitment.due_date}T${commitment.due_time}`);
 
-        if (dueDate < now) {
+        if (dueDateTime < now) {
           // Mark as failed and process donation
           updates.push(
             (async () => {
@@ -236,7 +238,8 @@ export default function DashboardPage() {
 
   // Helper functions
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    // Parse date as local timezone by appending 'T00:00:00'
+    const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -256,24 +259,45 @@ export default function DashboardPage() {
     return charity.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
-  const getDaysUntil = (dueDate: string) => {
-    const due = new Date(dueDate);
+  const getTimeUntil = (commitment: Commitment) => {
+    // Safety check for missing due_date or due_time
+    if (!commitment.due_date || !commitment.due_time) {
+      return { value: 0, unit: 'days' };
+    }
+
+    // Combine due_date and due_time for accurate calculation
+    const due = new Date(`${commitment.due_date}T${commitment.due_time}`);
     const now = new Date();
-    const diff = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    return diff;
+    const diffMs = due.getTime() - now.getTime();
+
+    // Return hours if less than 24 hours, otherwise days
+    const hours = diffMs / (1000 * 60 * 60);
+    if (hours < 24 && hours > 0) {
+      return { value: Math.ceil(hours), unit: 'hours' };
+    }
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    return { value: days > 0 ? days : 0, unit: 'days' };
   };
 
-  const getUrgencyColor = (daysUntil: number) => {
-    if (daysUntil <= 1) return "text-red-600 font-semibold";
-    if (daysUntil <= 3) return "text-orange-600 font-medium";
-    if (daysUntil <= 7) return "text-yellow-600";
+  const getDaysUntil = (commitment: Commitment) => {
+    return getTimeUntil(commitment).value;
+  };
+
+  const getUrgencyColor = (commitment: Commitment) => {
+    const time = getTimeUntil(commitment);
+    if (time.unit === 'hours') return "text-red-600 font-semibold";
+    if (time.value <= 1) return "text-red-600 font-semibold";
+    if (time.value <= 3) return "text-orange-600 font-medium";
+    if (time.value <= 7) return "text-yellow-600";
     return "text-neutral-800";
   };
 
-  const getUrgencyBadge = (daysUntil: number) => {
-    if (daysUntil <= 0) return <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full ml-2">Overdue</span>;
-    if (daysUntil === 1) return <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full ml-2">Due Tomorrow</span>;
-    if (daysUntil <= 3) return <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full ml-2">Due Soon</span>;
+  const getUrgencyBadge = (commitment: Commitment) => {
+    const time = getTimeUntil(commitment);
+    if (time.value <= 0) return <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full ml-2">Overdue</span>;
+    if (time.unit === 'hours') return <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full ml-2">Due Today</span>;
+    if (time.value === 1) return <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full ml-2">Due Tomorrow</span>;
+    if (time.value <= 3) return <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full ml-2">Due Soon</span>;
     return null;
   };
 
@@ -321,7 +345,7 @@ export default function DashboardPage() {
                 Community
               </Button>
             </Link>
-            {user?.is_admin && (
+            {user?.is_admin && isAdminEmail(user?.email) && (
               <Link href="/admin/donations" className="flex-shrink-0">
                 <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2 text-orange-600">
                   Admin
@@ -428,10 +452,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center">
                           <span className="text-gray-500">Days left:</span>{" "}
-                          <span className={getUrgencyColor(getDaysUntil(commitment.due_date))}>
-                            {getDaysUntil(commitment.due_date)}
+                          <span className={getUrgencyColor(getDaysUntil(commitment))}>
+                            {getDaysUntil(commitment)}
                           </span>
-                          {getUrgencyBadge(getDaysUntil(commitment.due_date))}
+                          {getUrgencyBadge(getDaysUntil(commitment))}
                         </div>
                       </>
                     )}
@@ -555,6 +579,21 @@ export default function DashboardPage() {
             </div>
           </section>
         )}
+
+        {/* Footer Links */}
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500">
+          <Link href="/terms" className="hover:text-blue-600 transition-colors">
+            Terms of Service
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/refund-policy" className="hover:text-blue-600 transition-colors">
+            Refund Policy
+          </Link>
+        </div>
       </div>
     </main>
   );

@@ -116,7 +116,8 @@ export default function CommitmentDetailsPage() {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    // Parse date as local timezone by appending 'T00:00:00'
+    const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",

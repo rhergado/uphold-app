@@ -3,15 +3,18 @@ import { supabase } from "@/lib/supabase";
 import { getCharityById } from "@/lib/charities";
 
 /**
- * SIMULATED DONATION PROCESSING (MVP/Testing Mode)
+ * DONATION PROCESSING
  *
- * This endpoint simulates donation processing by marking payments as "donated"
- * without actually transferring funds to charities.
+ * Currently: ALL donations are simulated (including real stakes)
  *
- * For production with real donations, you would:
+ * 🚀 TODO for Production:
  * 1. Use Stripe Connect to transfer funds to charity Stripe accounts
- * 2. Or integrate with charity-specific payment APIs
- * 3. Store actual transaction IDs and receipts
+ * 2. Or integrate with charity-specific payment APIs (PayPal Giving Fund, etc.)
+ * 3. Store actual transaction IDs and donation receipts
+ * 4. Generate tax-deductible donation receipts
+ *
+ * For now, this marks donations in DB but does not transfer real money to charities.
+ * Platform keeps the "charity portion" until real charity integration is built.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +61,7 @@ export async function POST(request: NextRequest) {
       Commitment: ${commitmentId}
       Status: SIMULATED (no real money transferred)`);
 
-    // Update payment record to mark as donated
+    // Update payment record to mark as donated (pending manual processing by admin)
     const { error: updateError } = await supabase
       .from("payments")
       .update({
@@ -66,6 +69,12 @@ export async function POST(request: NextRequest) {
         donation_amount: donationAmount,
         donation_date: new Date().toISOString(),
         donation_charity: charity,
+        // Leave donation_processed_at NULL to indicate pending admin processing
+        donation_processed_at: null,
+        donation_processed_by: null,
+        donation_batch_id: null,
+        donation_receipt_url: null,
+        donation_notes: null,
       })
       .eq("id", payment.id);
 
