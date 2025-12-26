@@ -7,6 +7,7 @@ export interface Charity {
   description: string;
   impact: string;
   website: string;
+  donationUrl: string; // Direct link to donation page
   stripeAccountId?: string; // For Stripe Connect (to be added when available)
 }
 
@@ -20,6 +21,7 @@ export const CHARITIES: Charity[] = [
     description: "Providing emergency medical care to people affected by conflict, epidemics, disasters, and exclusion from healthcare worldwide.",
     impact: "Your donation helps provide medical care to people in crisis",
     website: "https://www.doctorswithoutborders.org",
+    donationUrl: "https://donate.doctorswithoutborders.org/secure/donate",
     // stripeAccountId: "" // To be added when Stripe Connect is set up
   },
   {
@@ -31,6 +33,7 @@ export const CHARITIES: Charity[] = [
     description: "Working in over 190 countries to save children's lives, defend their rights, and help them fulfill their potential from early childhood through adolescence.",
     impact: "Your donation helps provide food, education, and protection to children in need",
     website: "https://www.unicef.org",
+    donationUrl: "https://www.unicefusa.org/donate",
     // stripeAccountId: "" // To be added when Stripe Connect is set up
   },
   {
@@ -42,6 +45,7 @@ export const CHARITIES: Charity[] = [
     description: "Leading animal welfare organization working to end the killing of dogs and cats in America's shelters through adoption programs, spay/neuter, and education.",
     impact: "Your donation helps rescue and care for homeless pets",
     website: "https://bestfriends.org",
+    donationUrl: "https://bestfriends.org/donate",
     // stripeAccountId: "" // To be added when Stripe Connect is set up
   },
 ];

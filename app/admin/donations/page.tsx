@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getCharityById } from "@/lib/charities";
 
 interface PendingDonation {
   id: string;
@@ -370,16 +371,28 @@ export default function AdminDonationsPage() {
                         {group.count} donation(s) • Total: ${group.totalAmount.toFixed(2)}
                       </p>
                     </div>
-                    {viewMode === "pending" && (
-                      <button
-                        onClick={() => selectCharity(group.charity)}
-                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        {group.donations.every(d => selectedPaymentIds.includes(d.payment_id))
-                          ? "Deselect All"
-                          : "Select All"}
-                      </button>
-                    )}
+                    <div className="flex gap-3 items-center">
+                      {viewMode === "pending" && (
+                        <>
+                          <a
+                            href={getCharityById(group.donations[0].charity)?.donationUrl || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                          >
+                            💚 Donate Now →
+                          </a>
+                          <button
+                            onClick={() => selectCharity(group.charity)}
+                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            {group.donations.every(d => selectedPaymentIds.includes(d.payment_id))
+                              ? "Deselect All"
+                              : "Select All"}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
