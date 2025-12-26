@@ -38,6 +38,14 @@ export async function sendEmail({
       html,
     });
 
+    // Log full response for debugging
+    console.log(`[Email] Full Resend Response:`, JSON.stringify(result, null, 2));
+
+    if (result.error) {
+      console.error(`[Email] Resend API Error:`, result.error);
+      throw new Error(`Resend API Error: ${JSON.stringify(result.error)}`);
+    }
+
     console.log(`[Email] Sent to ${to}: ${subject} (ID: ${result.data?.id})`);
     return result;
   } catch (error: any) {

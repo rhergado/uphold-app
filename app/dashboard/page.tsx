@@ -452,10 +452,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center">
                           <span className="text-gray-500">Days left:</span>{" "}
-                          <span className={getUrgencyColor(getDaysUntil(commitment))}>
+                          <span className={getUrgencyColor(commitment)}>
                             {getDaysUntil(commitment)}
                           </span>
-                          {getUrgencyBadge(getDaysUntil(commitment))}
+                          {getUrgencyBadge(commitment)}
                         </div>
                       </>
                     )}

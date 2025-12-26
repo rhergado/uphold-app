@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     if (user && commitment) {
       try {
         const emailTemplate = getRefundProcessedEmail({
-          userName: user.name,
+          userName: user.full_name || user.email.split("@")[0],
           commitmentIntention: commitment.intention,
           originalStake: payment.amount,
           refundAmount: refundAmount,
