@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { isAdminEmail } from "@/lib/admin-config";
 
 // Dummy community data
 const communityCommitments = [
@@ -215,6 +216,13 @@ export default function CommunityPage() {
                 Community
               </Button>
             </Link>
+            {user?.is_admin && isAdminEmail(user?.email) && (
+              <Link href="/admin/donations" className="flex-shrink-0">
+                <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2 text-orange-600">
+                  Admin
+                </Button>
+              </Link>
+            )}
             <Button
               variant="outline"
               size="sm"
