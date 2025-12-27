@@ -11,6 +11,8 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const commitmentId = searchParams.get("commitment_id");
   const [commitmentTitle, setCommitmentTitle] = useState("");
+  const [stakeAmount, setStakeAmount] = useState(0);
+  const [charityName, setCharityName] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
 
@@ -27,7 +29,7 @@ function PaymentSuccessContent() {
       try {
         const { data, error } = await supabase
           .from("commitments")
-          .select("title")
+          .select("title, stake_amount, charity_name")
           .eq("id", commitmentId)
           .single();
 
@@ -39,6 +41,8 @@ function PaymentSuccessContent() {
 
         console.log("Commitment data fetched:", data);
         setCommitmentTitle(data?.title || "Your commitment");
+        setStakeAmount(data?.stake_amount || 0);
+        setCharityName(data?.charity_name || "charity");
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch commitment:", error);
@@ -137,11 +141,19 @@ function PaymentSuccessContent() {
             </div>
           )}
 
-          <p className="text-lg text-neutral-700 leading-relaxed">
+          <p className="text-lg text-neutral-700 leading-relaxed mb-6">
             This is more than a transaction.
             <br />
             It's your word.
           </p>
+
+          {stakeAmount > 0 && (
+            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-lg">
+              <p className="text-sm font-medium text-red-900">
+                If you don't follow through, ${stakeAmount.toFixed(2)} will be donated to {charityName}.
+              </p>
+            </div>
+          )}
         </div>
 
         <Button
