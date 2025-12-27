@@ -147,8 +147,8 @@ function PaymentSuccessContent() {
             It's your word.
           </p>
 
-          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-sm font-medium text-red-900">
+          <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm font-medium text-amber-900">
               Break this promise and your money is gone. Don't let that happen.
             </p>
           </div>
