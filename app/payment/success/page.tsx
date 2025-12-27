@@ -147,13 +147,11 @@ function PaymentSuccessContent() {
             It's your word.
           </p>
 
-          {stakeAmount > 0 && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-lg">
-              <p className="text-sm font-medium text-red-900">
-                If you don't follow through, ${stakeAmount.toFixed(2)} will be donated to {charityName}.
-              </p>
-            </div>
-          )}
+          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-lg">
+            <p className="text-sm font-medium text-red-900">
+              Break this promise and your money is gone. Don't let that happen.
+            </p>
+          </div>
         </div>
 
         <Button
