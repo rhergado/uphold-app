@@ -417,7 +417,7 @@ export default function DashboardPage() {
                       {commitment.outcome}
                     </p>
                     <p className="text-xs text-neutral-500 italic">
-                      You gave your word on {formatTimestamp(commitment.created_at)}
+                      You gave <span className="font-semibold text-neutral-700">your word</span> on {formatTimestamp(commitment.created_at)}
                     </p>
                   </div>
 
