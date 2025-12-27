@@ -247,6 +247,16 @@ export default function DashboardPage() {
     });
   };
 
+  const formatTimestamp = (timestamp: string) => {
+    // Parse ISO timestamp directly
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(":");
     const hour = parseInt(hours);
@@ -407,7 +417,7 @@ export default function DashboardPage() {
                       {commitment.outcome}
                     </p>
                     <p className="text-xs text-neutral-500 italic">
-                      You gave your word on {formatDate(commitment.created_at)}
+                      You gave your word on {formatTimestamp(commitment.created_at)}
                     </p>
                   </div>
 
