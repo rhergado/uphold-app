@@ -200,24 +200,12 @@ export default function PaymentPage() {
         return;
       }
 
-      // 🎯 CHEAT CODE: If test mode, skip payment page and go straight to dashboard
+      // 🎯 CHEAT CODE: If test mode, skip payment page and go to commitment seal
       if (data.isTestMode) {
-        console.log("[CHEAT CODE] Test mode detected - skipping payment page");
+        console.log("[CHEAT CODE] Test mode detected - redirecting to commitment seal");
 
-        // Send payment confirmation email for test mode
-        fetch("/api/send-payment-confirmation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            commitmentId: params.commitmentId,
-            userId: user.id,
-          }),
-        }).catch((err) => {
-          console.error("Failed to send payment confirmation email:", err);
-        });
-
-        alert("🎯 Test mode! Payment simulated instantly. Redirecting to dashboard...");
-        router.push("/dashboard");
+        // Redirect to payment success page (commitment seal moment)
+        router.push(`/payment/success?commitment_id=${params.commitmentId}`);
         return;
       }
 
