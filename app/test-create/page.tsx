@@ -199,22 +199,10 @@ export default function TestCreatePage() {
           console.error("Error creating test payment:", paymentError);
         }
 
-        console.log("[CHEAT CODE] Payment simulated with $5.55 - no real charge");
+        console.log("[CHEAT CODE] Payment simulated with $5.55 - redirecting to commitment seal");
 
-        // Send payment confirmation email for test mode
-        fetch("/api/send-payment-confirmation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            commitmentId: insertedCommitment.id,
-            userId: user.id,
-          }),
-        }).catch((err) => {
-          console.error("Failed to send payment confirmation email:", err);
-        });
-
-        alert("🎯 Test mode activated! Payment simulated (no real charge). Commitment created!");
-        router.push("/dashboard");
+        // Redirect to payment success page (commitment seal moment)
+        router.push(`/payment/success?commitment_id=${insertedCommitment.id}`);
       } else {
         // Redirect to payment page for real Stripe payment
         router.push(`/payment/${insertedCommitment.id}`);
