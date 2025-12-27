@@ -356,7 +356,11 @@ export default function DashboardPage() {
               </Button>
             </Link>
             <Link href="/community" className="flex-shrink-0">
-              <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`font-normal text-xs px-3 py-2 ${pathname === '/community' ? 'bg-gray-100' : ''}`}
+              >
                 Community
               </Button>
             </Link>
