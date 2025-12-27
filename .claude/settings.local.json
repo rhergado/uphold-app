@@ -35,7 +35,11 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(git remote set-url:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(nslookup:*)"
     ]
   }
 }

@@ -4,20 +4,46 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const commitmentId = searchParams.get("commitment_id");
-  const [countdown, setCountdown] = useState(5);
+  const [commitmentTitle, setCommitmentTitle] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
+    const fetchCommitment = async () => {
+      if (!commitmentId) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("commitments")
+          .select("title")
+          .eq("id", commitmentId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching commitment:", error);
+          return;
+        }
+
+        setCommitmentTitle(data?.title || "");
+      } catch (error) {
+        console.error("Failed to fetch commitment:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCommitment();
+
     // Send payment confirmation email
     const sendConfirmationEmail = async () => {
       if (!commitmentId) return;
 
-      // Get user ID from localStorage (auth context)
       const storedUser = localStorage.getItem("uphold_user");
       if (!storedUser) return;
 
@@ -34,80 +60,77 @@ function PaymentSuccessContent() {
         });
       } catch (error) {
         console.error("Failed to send payment confirmation email:", error);
-        // Don't fail the page if email fails
       }
     };
 
     sendConfirmationEmail();
-
-    let timer: NodeJS.Timeout;
-
-    const startCountdown = () => {
-      timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            // Use replace instead of push to avoid the error
-            window.location.href = "/dashboard";
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    };
-
-    startCountdown();
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
   }, [commitmentId]);
+
+  const handleGiveWord = async () => {
+    if (!commitmentId) return;
+
+    setConfirming(true);
+
+    try {
+      const response = await fetch("/api/confirm-commitment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commitmentId }),
+      });
+
+      if (response.ok) {
+        // Redirect to dashboard after confirmation
+        window.location.href = "/dashboard";
+      } else {
+        console.error("Failed to confirm commitment");
+        setConfirming(false);
+      }
+    } catch (error) {
+      console.error("Error confirming commitment:", error);
+      setConfirming(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[#f8f7f4] px-6">
+        <Card className="max-w-md w-full p-8 text-center">
+          <p className="text-gray-600">Loading...</p>
+        </Card>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#f8f7f4] px-6">
-      <Card className="max-w-md w-full p-8 text-center">
-        <div className="mb-6">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-semibold text-neutral-900 mb-2">
-            Payment Successful!
+      <Card className="max-w-lg w-full p-12 text-center">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-neutral-900 mb-6">
+            This is now a promise.
           </h1>
-          <p className="text-gray-600">
-            Your commitment is now active. Your stake is securely held and will be returned when you complete your commitment.
+
+          <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
+            <p className="text-sm text-neutral-600 mb-2">You committed to:</p>
+            <p className="text-xl font-medium text-neutral-900">
+              "{commitmentTitle}"
+            </p>
+          </div>
+
+          <p className="text-lg text-neutral-700 leading-relaxed">
+            This is more than a transaction.
+            <br />
+            It's your word.
           </p>
         </div>
 
-        <div className="space-y-3">
-          <Link href="/dashboard" className="block">
-            <Button className="w-full" size="lg">
-              Go to Dashboard
-            </Button>
-          </Link>
-          {commitmentId && (
-            <Link href={`/commitment/${commitmentId}`} className="block">
-              <Button variant="outline" className="w-full" size="lg">
-                View Commitment
-              </Button>
-            </Link>
-          )}
-        </div>
-
-        <p className="text-xs text-gray-500 mt-6">
-          Redirecting to dashboard in {countdown} seconds...
-        </p>
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleGiveWord}
+          disabled={confirming}
+        >
+          {confirming ? "Confirming..." : "I give my word"}
+        </Button>
       </Card>
     </main>
   );
@@ -118,27 +141,7 @@ export default function PaymentSuccessPage() {
     <Suspense fallback={
       <main className="min-h-screen flex items-center justify-center bg-[#f8f7f4] px-6">
         <Card className="max-w-md w-full p-8 text-center">
-          <div className="mb-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-semibold text-neutral-900 mb-2">
-              Payment Successful!
-            </h1>
-            <p className="text-gray-600">Loading...</p>
-          </div>
+          <p className="text-gray-600">Loading...</p>
         </Card>
       </main>
     }>

@@ -1098,13 +1098,35 @@ echo "# Uphold - Accountability Platform" >> README.md && git add README.md && g
 - **Final Deployment:** Commit a8aa64e (Next.js 15.3.8 upgrade)
 - **Live Status:** Ready for production testing
 - **Cost:** $0/month (Vercel free tier)
+- **Production URL:** https://uphold-app.vercel.app
+
+**Custom Domain Setup (IN PROGRESS - NAMESERVER PROPAGATION):**
+- **Domain:** upholdyourgoal.com
+- **DNS Configuration Method:** Vercel DNS (using Vercel nameservers)
+- **Nameservers Updated in Squarespace:**
+  - ns1.vercel-dns.com
+  - ns2.vercel-dns.com
+- **Previous Issue Resolved:** Domain was using locked Google Domains nameservers from domain migration
+- **Resolution:** Switched from adding DNS records in Squarespace to using Vercel's nameservers directly
+- **Current Status:** Nameserver propagation in progress (15-30 minutes expected)
+- **Vercel Status:** Invalid Configuration (waiting for nameserver propagation)
+- **DNS Check Command:** `nslookup -type=NS upholdyourgoal.com` (currently showing "Non-existent domain" - propagation not complete)
+- **Expected Completion:** 15-30 minutes (up to 48 hours max)
+- **Next Step:** Once propagated, click "Refresh" in Vercel Domains page to verify
+
+**Production Testing Completed:**
+1. ✅ Live deployment URL verified: https://uphold-app.vercel.app
+2. ✅ User signup tested and working
+3. ✅ User login tested and working
+4. ✅ Dashboard redirect working correctly
+5. ✅ Test commitment created with $5.55 stake
+6. ✅ Email confirmation sent successfully
 
 **Next Steps:**
-1. Get live deployment URL from Vercel dashboard
-2. Update NEXT_PUBLIC_APP_URL environment variable with production URL
-3. Test complete user flow in production environment
-4. Verify Stripe payments work correctly
-5. Test email sending with real users
+1. ⏳ Wait for DNS propagation (15-30 minutes)
+2. ⏳ Verify custom domain in Vercel (click Refresh when DNS propagates)
+3. ⏳ Test complete user flow on custom domain once live
+4. Optional: Test with real payment (user mentioned wanting to test)
 
 ---
 
