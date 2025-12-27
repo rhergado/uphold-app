@@ -403,8 +403,11 @@ export default function DashboardPage() {
                         Active
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
                       {commitment.outcome}
+                    </p>
+                    <p className="text-xs text-neutral-500 italic">
+                      You gave your word on {formatDate(commitment.created_at)}
                     </p>
                   </div>
 
