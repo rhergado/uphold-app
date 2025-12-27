@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { isAdminEmail } from "@/lib/admin-config";
@@ -30,6 +30,7 @@ interface Commitment {
 export default function DashboardPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [commitments, setCommitments] = useState<Commitment[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkInCounts, setCheckInCounts] = useState<Record<string, number>>({});
@@ -346,7 +347,11 @@ export default function DashboardPage() {
               </Button>
             </Link>
             <Link href="/dashboard" className="flex-shrink-0">
-              <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`font-normal text-xs px-3 py-2 ${pathname === '/dashboard' ? 'bg-gray-100' : ''}`}
+              >
                 Dashboard
               </Button>
             </Link>
