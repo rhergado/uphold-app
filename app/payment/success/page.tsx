@@ -16,7 +16,13 @@ function PaymentSuccessContent() {
 
   useEffect(() => {
     const fetchCommitment = async () => {
-      if (!commitmentId) return;
+      if (!commitmentId) {
+        console.log("No commitment ID provided");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Fetching commitment with ID:", commitmentId);
 
       try {
         const { data, error } = await supabase
@@ -27,13 +33,15 @@ function PaymentSuccessContent() {
 
         if (error) {
           console.error("Error fetching commitment:", error);
+          setLoading(false);
           return;
         }
 
-        setCommitmentTitle(data?.title || "");
+        console.log("Commitment data fetched:", data);
+        setCommitmentTitle(data?.title || "Your commitment");
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch commitment:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -109,12 +117,14 @@ function PaymentSuccessContent() {
             This is now a promise.
           </h1>
 
-          <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
-            <p className="text-sm text-neutral-600 mb-2">You committed to:</p>
-            <p className="text-xl font-medium text-neutral-900">
-              "{commitmentTitle}"
-            </p>
-          </div>
+          {commitmentTitle && (
+            <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
+              <p className="text-sm text-neutral-600 mb-2">You committed to:</p>
+              <p className="text-xl font-medium text-neutral-900">
+                "{commitmentTitle}"
+              </p>
+            </div>
+          )}
 
           <p className="text-lg text-neutral-700 leading-relaxed">
             This is more than a transaction.
