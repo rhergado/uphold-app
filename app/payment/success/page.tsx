@@ -75,8 +75,12 @@ function PaymentSuccessContent() {
   }, [commitmentId]);
 
   const handleGiveWord = async () => {
-    if (!commitmentId) return;
+    if (!commitmentId) {
+      console.error("No commitment ID - cannot confirm");
+      return;
+    }
 
+    console.log("Confirming commitment:", commitmentId);
     setConfirming(true);
 
     try {
@@ -86,15 +90,22 @@ function PaymentSuccessContent() {
         body: JSON.stringify({ commitmentId }),
       });
 
+      console.log("Confirm response status:", response.status);
+      const responseData = await response.json();
+      console.log("Confirm response data:", responseData);
+
       if (response.ok) {
+        console.log("Commitment confirmed successfully, redirecting to dashboard");
         // Redirect to dashboard after confirmation
         window.location.href = "/dashboard";
       } else {
-        console.error("Failed to confirm commitment");
+        console.error("Failed to confirm commitment:", responseData);
+        alert("Failed to confirm commitment. Please try again.");
         setConfirming(false);
       }
     } catch (error) {
       console.error("Error confirming commitment:", error);
+      alert("An error occurred. Please try again.");
       setConfirming(false);
     }
   };
