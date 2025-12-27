@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 // Dummy community data
@@ -147,6 +147,7 @@ const communityCommitments = [
 export default function CommunityPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -197,12 +198,20 @@ export default function CommunityPage() {
               </Button>
             </Link>
             <Link href="/dashboard" className="flex-shrink-0">
-              <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`font-normal text-xs px-3 py-2 ${pathname === '/dashboard' ? 'bg-gray-100' : ''}`}
+              >
                 Dashboard
               </Button>
             </Link>
             <Link href="/community" className="flex-shrink-0">
-              <Button variant="ghost" size="sm" className="font-normal text-xs px-3 py-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`font-normal text-xs px-3 py-2 ${pathname === '/community' ? 'bg-gray-100' : ''}`}
+              >
                 Community
               </Button>
             </Link>
