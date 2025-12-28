@@ -73,7 +73,7 @@ export default function HowItWorksPage() {
                 <span className="font-semibold">Integrity Mode:</span> Self-verify on your honor
               </li>
               <li className="text-gray-700">
-                <span className="font-semibold">Buddy Verification:</span> Have a trusted friend confirm
+                <span className="font-semibold">Buddy Verification:</span> Have a trusted friend verify and confirm
               </li>
               <li className="text-gray-700">
                 <span className="font-semibold">App Verification:</span> Submit proof for review
@@ -113,10 +113,10 @@ export default function HowItWorksPage() {
                   ✓ If You Succeed:
                 </p>
                 <p className="text-sm text-green-700">
-                  You get 95% of your stake refunded within 24 hours. We keep 5% as a platform fee.
+                  You get your full stake back minus a $4.95 platform fee.
                 </p>
                 <p className="text-xs text-green-600 mt-1">
-                  Example: $20 stake → $19.00 refunded, $1.00 platform fee
+                  Example: $20 stake → $15.05 refunded, $4.95 platform fee
                 </p>
               </div>
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
@@ -124,10 +124,10 @@ export default function HowItWorksPage() {
                   ✗ If You Don't Complete It:
                 </p>
                 <p className="text-sm text-orange-700">
-                  75% goes to your chosen charity. We keep 25% as a platform fee.
+                  70% goes to your chosen charity. We keep 30% as a platform fee.
                 </p>
                 <p className="text-xs text-orange-600 mt-1">
-                  Example: $20 stake → $15.00 to charity, $5.00 platform fee
+                  Example: $20 stake → $14.00 to charity, $6.00 platform fee
                 </p>
               </div>
             </div>

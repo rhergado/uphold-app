@@ -34,7 +34,7 @@ export default function Home() {
             Keep your word.
           </p>
           <p className="text-base text-gray-700 leading-relaxed max-w-sm mx-auto">
-            Put money on the line to achieve your goals. Get 95% back when you succeed, or donate to charity when you don't.
+            Put money on the line to achieve your goals. Get it back if you suceed, or donate to charity when you dont.
           </p>
         </div>
 
