@@ -39,7 +39,13 @@
       "Bash(gh repo edit:*)",
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
-      "Bash(nslookup:*)"
+      "Bash(nslookup:*)",
+      "Bash(if not exist C:Backups mkdir C:Backups)",
+      "Bash(if not exist %BACKUP_DIR% mkdir %BACKUP_DIR%)",
+      "Bash(cmd.exe /c \"if not exist C:\\\\Backups mkdir C:\\\\Backups && if not exist C:\\\\Backups\\\\uphold_backup_20251227 mkdir C:\\\\Backups\\\\uphold_backup_20251227 && robocopy c:\\\\MyApps\\\\uphold C:\\\\Backups\\\\uphold_backup_20251227 /E /XD node_modules .next .vercel .git /XF package-lock.json .env.local *.log && echo Backup completed successfully\")",
+      "Bash(find:*)",
+      "Bash(cmd.exe /c \"if not exist C:\\\\Backups mkdir C:\\\\Backups\")",
+      "Bash(cmd.exe /c \"if not exist C:\\\\Backups\\\\uphold_backup_20251230_domain_migration mkdir C:\\\\Backups\\\\uphold_backup_20251230_domain_migration && robocopy c:\\\\MyApps\\\\uphold C:\\\\Backups\\\\uphold_backup_20251230_domain_migration /E /XD node_modules .next .vercel .git \"\"uphold - backup Dec 24th 2025\"\" uphold-backup-20251222-221201 uphold_backup_ uphold_backup_20251226_timezone_fix /XF package-lock.json .env.local *.log && echo Backup completed successfully\")"
     ]
   }
 }

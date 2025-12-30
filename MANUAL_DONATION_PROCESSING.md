@@ -471,7 +471,7 @@ WHERE table_name = 'payments'
 ## Support
 
 For questions about manual donation processing:
-- **Email:** support@uphold.com
+- **Email:** support@upholdmyword.org
 - **Documentation:** This file + `CHEAT_CODE_DOCUMENTATION.md`
 - **Code Reference:** See "File Reference" section above
 

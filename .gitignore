@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 nul
 nul
+
+# backup folders
+uphold_backup_*/
+uphold-backup-*/
+uphold - backup*/

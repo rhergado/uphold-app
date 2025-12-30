@@ -277,7 +277,7 @@ Go through `PRE_LAUNCH_CHECKLIST.md` step by step
    - Test with real $5 payment
 
 2. **Consider Custom Domain**
-   - Buy domain (e.g., uphold.com)
+   - Buy domain (e.g., upholdmyword.org)
    - Add to Vercel (still free)
    - Configure email from your domain
 

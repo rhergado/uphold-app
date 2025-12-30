@@ -1,6 +1,6 @@
 # Domain Setup Guide
 
-**Domain:** upholdmygoal.com
+**Domain:** upholdmyword.org
 **Brand Name:** Uphold
 **Registrar:** (Where you purchased it)
 
@@ -20,8 +20,8 @@
 ### In Vercel Dashboard:
 
 1. Go to your project → Settings → Domains
-2. Add domain: `upholdmygoal.com`
-3. Also add: `www.upholdmygoal.com` (optional, will redirect to main)
+2. Add domain: `upholdmyword.org`
+3. Also add: `www.upholdmyword.org` (optional, will redirect to main)
 
 ### Vercel will give you DNS records to add:
 
@@ -59,7 +59,7 @@ Go to your domain registrar (GoDaddy, Namecheap, Google Domains, etc.):
 Once domain is connected, update in Vercel:
 
 ```bash
-NEXT_PUBLIC_APP_URL=https://upholdmygoal.com
+NEXT_PUBLIC_APP_URL=https://upholdmyword.org
 ```
 
 Redeploy after updating.
@@ -73,7 +73,7 @@ Redeploy after updating.
 - Limited to 100 emails/day
 
 ### With Custom Domain:
-- Use `hello@upholdmygoal.com` or `support@upholdmygoal.com`
+- Use `hello@upholdmyword.org` or `support@upholdmyword.org`
 - Looks more professional
 - Higher sending limits with paid plan
 
@@ -81,7 +81,7 @@ Redeploy after updating.
 
 1. Go to Resend Dashboard → Domains
 2. Click "Add Domain"
-3. Enter: `upholdmygoal.com`
+3. Enter: `upholdmyword.org`
 4. Resend will give you DNS records to add:
    - SPF record
    - DKIM records
@@ -93,7 +93,7 @@ Redeploy after updating.
 7. Update code to use new email address:
    - `app/api/admin/send-donation-receipts/route.ts`
    - Change from: `"Uphold <onboarding@resend.dev>"`
-   - To: `"Uphold <hello@upholdmygoal.com>"`
+   - To: `"Uphold <hello@upholdmyword.org>"`
 
 ---
 
@@ -104,7 +104,7 @@ Redeploy after updating.
 - Auto-renews
 - Works immediately after DNS propagation
 
-Your site will be `https://upholdmygoal.com` automatically.
+Your site will be `https://upholdmyword.org` automatically.
 
 ---
 
@@ -131,8 +131,8 @@ TXT   _dmarc   v=DMARC1; p=none; ...
 
 After DNS propagates:
 
-1. **Test website:** Visit https://upholdmygoal.com
-2. **Test www redirect:** Visit https://www.upholdmygoal.com
+1. **Test website:** Visit https://upholdmyword.org
+2. **Test www redirect:** Visit https://www.upholdmyword.org
 3. **Test email sending:** Create a failed commitment, process donation, check receipt email
 4. **Check SSL:** Look for padlock icon in browser
 
@@ -158,7 +158,7 @@ After DNS propagates:
 
 ## Current Status
 
-- [x] Domain purchased: upholdmygoal.com
+- [x] Domain purchased: upholdmyword.org
 - [ ] Added to Vercel
 - [ ] DNS configured
 - [ ] Domain verified and working
@@ -185,8 +185,8 @@ After DNS propagates:
 ## Notes
 
 - **Brand Name:** Always "Uphold" in UI, emails, marketing
-- **Domain:** upholdmygoal.com for SEO and clarity
-- **Email:** hello@upholdmygoal.com (professional)
+- **Domain:** upholdmyword.org for SEO and clarity
+- **Email:** hello@upholdmyword.org (professional)
 - **Tagline ideas:**
   - "Uphold - Hold yourself accountable"
   - "Uphold your commitments"
@@ -205,7 +205,7 @@ grep -r "onboarding@resend.dev" app/
 **Update environment variable:**
 ```bash
 # In Vercel dashboard or .env.local
-NEXT_PUBLIC_APP_URL=https://upholdmygoal.com
+NEXT_PUBLIC_APP_URL=https://upholdmyword.org
 ```
 
 ---

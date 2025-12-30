@@ -122,11 +122,11 @@ export function getDonationReceiptEmail(params: DonationReceiptEmailParams) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
+    <p>Questions? Contact us at <a href="mailto:upholdmyword@gmail.com" style="color: #2563eb; text-decoration: none;">upholdmyword@gmail.com</a></p>
     <p style="margin-top: 10px;">
-      <a href="https://uphold.com/terms" style="color: #2563eb; text-decoration: none;">Terms</a> •
-      <a href="https://uphold.com/privacy" style="color: #2563eb; text-decoration: none;">Privacy</a> •
-      <a href="https://uphold.com/refund-policy" style="color: #2563eb; text-decoration: none;">Refund Policy</a>
+      <a href="https://upholdmyword.org/terms" style="color: #2563eb; text-decoration: none;">Terms</a> •
+      <a href="https://upholdmyword.org/privacy" style="color: #2563eb; text-decoration: none;">Privacy</a> •
+      <a href="https://upholdmyword.org/refund-policy" style="color: #2563eb; text-decoration: none;">Refund Policy</a>
     </p>
     <p style="margin-top: 15px; color: #999;">
       © 2025 Uphold. All rights reserved.
@@ -216,7 +216,7 @@ export function getPaymentConfirmationEmail(params: PaymentConfirmationEmailPara
 
   <!-- CTA Button -->
   <div style="text-align: center; margin: 30px 0;">
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/commitment/${commitmentId}"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/commitment/${commitmentId}"
        style="display: inline-block; background: #2563eb; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
       View Your Commitment
     </a>
@@ -227,7 +227,7 @@ export function getPaymentConfirmationEmail(params: PaymentConfirmationEmailPara
     <p>You're receiving this email because you created a commitment on Uphold.</p>
     <p style="margin-top: 10px;">
       Questions? Reply to this email or visit our
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/how-it-works" style="color: #2563eb;">Help Center</a>
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/how-it-works" style="color: #2563eb;">Help Center</a>
     </p>
   </div>
 
@@ -327,7 +327,7 @@ export function getRefundProcessedEmail(params: RefundProcessedEmailParams) {
     <p style="font-size: 14px; color: #666; margin: 0;">
       Ready for your next challenge?
     </p>
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/test-create"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/test-create"
        style="display: inline-block; background: #2563eb; color: white; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 15px;">
       Create New Commitment
     </a>
@@ -335,7 +335,7 @@ export function getRefundProcessedEmail(params: RefundProcessedEmailParams) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions about your refund? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
+    <p>Questions about your refund? Contact us at <a href="mailto:upholdmyword@gmail.com" style="color: #2563eb; text-decoration: none;">upholdmyword@gmail.com</a></p>
   </div>
 
 </body>
@@ -433,7 +433,7 @@ export function getCommitmentReminderEmail(params: CommitmentReminderEmailParams
 
   <!-- CTA Button -->
   <div style="text-align: center; margin: 30px 0;">
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/commitment/${commitmentId}"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/commitment/${commitmentId}"
        style="display: inline-block; background: ${urgencyColor}; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
       Mark as Complete
     </a>
@@ -450,7 +450,7 @@ export function getCommitmentReminderEmail(params: CommitmentReminderEmailParams
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
     <p>You're receiving this reminder because you have an active commitment on Uphold.</p>
     <p style="margin-top: 10px;">
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/dashboard" style="color: #2563eb;">View All Commitments</a>
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/dashboard" style="color: #2563eb;">View All Commitments</a>
     </p>
   </div>
 

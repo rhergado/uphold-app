@@ -95,9 +95,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
 STRIPE_SECRET_KEY=sk_test_51Si4yx... (keep test for now)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51Si4yx...
 RESEND_API_KEY=re_5AK4eX2A_65HUu9ZQBr41mbhJjhCbjVQa
-RESEND_FROM_EMAIL=Uphold <onboarding@resend.dev> (change to noreply@upholdyourgoal.com after domain verification)
+RESEND_FROM_EMAIL=Uphold <onboarding@resend.dev> (change to noreply@upholdmyword.org after domain verification)
 CRON_SECRET=uphold_cron_secret_key_2025
-NEXT_PUBLIC_APP_URL=https://upholdyourgoal.com
+NEXT_PUBLIC_APP_URL=https://upholdmyword.org
 ```
 
 ### Deploy Steps

@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
   <!-- CTA Button -->
   <div style="text-align: center; margin: 30px 0;">
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/test-create"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/test-create"
        style="display: inline-block; background: #2563eb; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
       Make Your First Commitment
     </a>
@@ -115,11 +115,11 @@ export async function POST(request: NextRequest) {
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #666; font-size: 12px;">
-    <p>Questions? Contact us at <a href="mailto:upholdyourgoal@gmail.com" style="color: #2563eb; text-decoration: none;">upholdyourgoal@gmail.com</a></p>
+    <p>Questions? Contact us at <a href="mailto:upholdmyword@gmail.com" style="color: #2563eb; text-decoration: none;">upholdmyword@gmail.com</a></p>
     <p style="margin-top: 10px;">
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/how-it-works" style="color: #2563eb;">How It Works</a> •
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/terms" style="color: #2563eb;">Terms</a> •
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://uphold.app'}/privacy" style="color: #2563eb;">Privacy</a>
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/how-it-works" style="color: #2563eb;">How It Works</a> •
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/terms" style="color: #2563eb;">Terms</a> •
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://upholdmyword.org'}/privacy" style="color: #2563eb;">Privacy</a>
     </p>
     <p style="margin-top: 15px; color: #999;">
       © 2025 Uphold. All rights reserved.

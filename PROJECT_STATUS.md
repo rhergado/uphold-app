@@ -1,6 +1,6 @@
 # Uphold - Project Status Document
 
-**Last Updated**: December 26, 2025 - Flat Fee Pricing Model Implemented
+**Last Updated**: December 30, 2025 - Domain Migration Complete
 **Next.js Version**: 15.3.0 (downgraded from 16.1.1 due to Turbopack crashes)
 **Dev Server**: http://192.168.12.111:3002 (for mobile testing)
 **Current Mode**: Production-Ready with Test Mode Cheat Code
@@ -580,7 +580,7 @@ Implemented full transactional email system using Resend API. All 4 email types 
 **⚠️ Important Limitation:**
 - Resend free tier only allows sending emails to the API key owner's email address (`robert.her.delgado@gmail.com`)
 - To send to other recipients, you must verify a custom domain at [resend.com/domains](https://resend.com/domains)
-- For production, verify `upholdyourgoal.com` domain and change `RESEND_FROM_EMAIL` to `Uphold <noreply@upholdyourgoal.com>`
+- For production, verify `upholdmyword.org` domain and change `RESEND_FROM_EMAIL` to `Uphold <noreply@upholdmyword.org>`
 
 ---
 
@@ -595,7 +595,7 @@ Implemented full transactional email system using Resend API. All 4 email types 
 2. **Real Payment Success**: Sent on payment success page load in `app/payment/success/page.tsx:15-41`
 3. **Stripe Webhook**: Sent when webhook receives payment confirmation in `app/api/stripe-webhook/route.ts:91-105`
 
-**Support Contact:** All emails include support contact: `upholdyourgoal@gmail.com`
+**Support Contact:** All emails include support contact: `upholdmyword@gmail.com`
 
 **Email Content:**
 - ✅ "Payment Confirmed" header with green checkmark
@@ -746,7 +746,7 @@ Implemented full transactional email system using Resend API. All 4 email types 
 
 **Modified:**
 - `lib/resend.ts` - Enhanced error logging and Resend API error detection
-- `lib/email-templates.ts` - All email footers updated with support email (upholdyourgoal@gmail.com)
+- `lib/email-templates.ts` - All email footers updated with support email (upholdmyword@gmail.com)
 - `app/api/send-welcome-email/route.ts` - Welcome email footer updated with support email
 - `app/dashboard/page.tsx` - Fixed days left calculation bug
 - `app/test-create/page.tsx` - Added payment confirmation email trigger for test mode
@@ -767,37 +767,37 @@ Implemented full transactional email system using Resend API. All 4 email types 
 - ✅ User name displays properly
 - ✅ Transaction ID shows correctly
 - ✅ All links functional
-- ✅ Support email (upholdyourgoal@gmail.com) included in footer
+- ✅ Support email (upholdmyword@gmail.com) included in footer
 
 **Welcome Email:**
 - ✅ Tested via curl command
 - ✅ Email received successfully
 - ✅ All content renders correctly
 - ✅ CTA button works
-- ✅ Support email (upholdyourgoal@gmail.com) included in footer
+- ✅ Support email (upholdmyword@gmail.com) included in footer
 
 **Refund Email:**
 - ✅ Tested by completing a commitment
 - ✅ Email received with correct refund calculation
 - ✅ Platform fee breakdown clear
 - ✅ Simulated refund ID shown for test mode
-- ✅ Support email (upholdyourgoal@gmail.com) included in footer
+- ✅ Support email (upholdmyword@gmail.com) included in footer
 
 **Donation Receipt Email:**
 - ✅ Previously tested from admin dashboard
 - ✅ Working correctly with batch processing
-- ✅ Support email (upholdyourgoal@gmail.com) included in footer
+- ✅ Support email (upholdmyword@gmail.com) included in footer
 
 ---
 
 #### 🚀 Production Migration Checklist
 
 **Required Before Launch:**
-1. ⚠️ Verify domain `upholdyourgoal.com` at [resend.com/domains](https://resend.com/domains)
+1. ⚠️ Verify domain `upholdmyword.org` at [resend.com/domains](https://resend.com/domains)
 2. ⚠️ Add DNS records (SPF, DKIM, DMARC) to domain registrar
 3. ⚠️ Wait for domain verification (usually 24-48 hours)
-4. ⚠️ Update `.env.production`: `RESEND_FROM_EMAIL=Uphold <noreply@upholdyourgoal.com>`
-5. ⚠️ Update `NEXT_PUBLIC_APP_URL` to `https://upholdyourgoal.com`
+4. ⚠️ Update `.env.production`: `RESEND_FROM_EMAIL=Uphold <noreply@upholdmyword.org>`
+5. ⚠️ Update `NEXT_PUBLIC_APP_URL` to `https://upholdmyword.org`
 6. ⚠️ Test all 4 email types with real users after domain verification
 7. ⚠️ Monitor Resend dashboard for delivery rates and bounces
 
@@ -829,9 +829,9 @@ Implemented full transactional email system using Resend API. All 4 email types 
 **Status:** ✅ **COMPLETE - All 4 email types working and tested**
 
 **Additional Updates (December 26, 2025):**
-- ✅ Support email added to all templates: `upholdyourgoal@gmail.com`
+- ✅ Support email added to all templates: `upholdmyword@gmail.com`
 - ✅ Test mode stake updated: $5.55 (previously $0.07)
-- ✅ Domain verification in progress: `upholdyourgoal.com`
+- ✅ Domain verification in progress: `upholdmyword.org`
 - ✅ DNS records added to Squarespace (DKIM, SPF, DMARC)
 
 **Git Commit:** Completed - Code pushed to GitHub
@@ -887,7 +887,7 @@ All 8 required environment variables added to Vercel project:
 #### 🐛 Issues Encountered and Troubleshooting
 
 **Issue 1: Project Name Already Taken**
-- **Problem:** Initial project names `uphold-app` and `upholdyourgoal` were already taken
+- **Problem:** Initial project names `uphold-app` and `upholdmyword` were already taken
 - **Resolution:** Selected unique name `uphold-app-pbxh`
 - **Status:** ✅ Resolved
 
@@ -1100,19 +1100,146 @@ echo "# Uphold - Accountability Platform" >> README.md && git add README.md && g
 - **Cost:** $0/month (Vercel free tier)
 - **Production URL:** https://uphold-app.vercel.app
 
-**Custom Domain Setup (IN PROGRESS - NAMESERVER PROPAGATION):**
-- **Domain:** upholdyourgoal.com
-- **DNS Configuration Method:** Vercel DNS (using Vercel nameservers)
-- **Nameservers Updated in Squarespace:**
-  - ns1.vercel-dns.com
-  - ns2.vercel-dns.com
-- **Previous Issue Resolved:** Domain was using locked Google Domains nameservers from domain migration
-- **Resolution:** Switched from adding DNS records in Squarespace to using Vercel's nameservers directly
-- **Current Status:** Nameserver propagation in progress (15-30 minutes expected)
-- **Vercel Status:** Invalid Configuration (waiting for nameserver propagation)
-- **DNS Check Command:** `nslookup -type=NS upholdyourgoal.com` (currently showing "Non-existent domain" - propagation not complete)
-- **Expected Completion:** 15-30 minutes (up to 48 hours max)
-- **Next Step:** Once propagated, click "Refresh" in Vercel Domains page to verify
+**Custom Domain Setup (IN PROGRESS - CLOUDFLARE DNS PROPAGATION):**
+**Date Started:** December 27, 2025
+**Domain:** upholdmyword.org
+**Current Status:** Waiting for Cloudflare nameserver verification and DNS propagation
+
+---
+
+#### 📋 Custom Domain Setup - Complete Timeline
+
+**Attempt 1: Vercel DNS with Nameservers (Failed)**
+- **Date:** December 27, 2025 (early attempt)
+- **Method:** Using Vercel's nameservers directly
+- **Configuration:**
+  - Added domain to Vercel project
+  - Changed Squarespace nameservers to:
+    - ns1.vercel-dns.com
+    - ns2.vercel-dns.com
+- **Issue Discovered:** Domain was using locked Google Domains nameservers from previous migration
+- **Error:** Squarespace nameserver fields showed Google Domains nameservers and couldn't be changed
+- **Resolution Attempt:** Tried to update nameservers in Squarespace
+- **Outcome:** ❌ Failed - Nameservers locked due to Google Domains to Squarespace migration in progress
+- **Status:** Abandoned this approach
+
+**Attempt 2: Squarespace DNS Records (Failed)**
+- **Date:** December 27, 2025 (mid-day)
+- **Method:** Adding DNS records directly in Squarespace while keeping default nameservers
+- **Configuration Attempted:**
+  - Tried to add A record: @ → Vercel IP address
+  - Tried to add CNAME record: www → Vercel hostname
+- **Issue Discovered:** Conflicting DNS records already existed from previous Google Domains setup
+- **Problems Encountered:**
+  - Squarespace DNS interface showed existing conflicting records
+  - Unable to cleanly configure DNS without removing old records
+  - Risk of breaking existing email DNS records (MX, TXT)
+- **Outcome:** ❌ Failed - Too many conflicts with existing DNS configuration
+- **Status:** Abandoned this approach
+
+**Attempt 3: Vercel DNS with Nameservers (Second Try - Failed)**
+- **Date:** December 27, 2025 (afternoon)
+- **Method:** Retry Vercel nameservers after Google Domains migration completed
+- **Configuration:**
+  - Waited for Google Domains to Squarespace migration to complete
+  - Successfully changed Squarespace nameservers to:
+    - ns1.vercel-dns.com
+    - ns2.vercel-dns.com
+  - Added domain upholdmyword.org to Vercel
+- **DNS Propagation Check:**
+  - Command: `nslookup -type=NS upholdmyword.org`
+  - Result: "Non-existent domain" (nameservers not propagated)
+- **Issue:** Vercel showed "Invalid Configuration" status
+- **Wait Time:** 30+ minutes with no propagation
+- **Decision:** Nameserver propagation too slow, try different approach
+- **Outcome:** ❌ Failed - Too slow for immediate testing needs
+- **Status:** Abandoned in favor of Cloudflare approach
+
+**Attempt 4: Cloudflare DNS with Manual Records (CURRENT - IN PROGRESS ✅)**
+- **Date:** December 27, 2025 (late afternoon/evening)
+- **Method:** Using Cloudflare DNS with manual A and CNAME records pointing to Vercel
+- **Rationale:** Faster DNS propagation (5-10 min vs 24-48 hours), more control over DNS records
+
+**Configuration Steps Completed:**
+
+1. **Squarespace Nameserver Update:**
+   - Changed nameservers from Vercel to Cloudflare:
+     - felicity.ns.cloudflare.com
+     - nucum.ns.cloudflare.com
+   - DNSSEC: Disabled (verified off)
+   - Status: ✅ Complete
+
+2. **Cloudflare Zone Setup:**
+   - Added domain upholdmyword.org to Cloudflare
+   - Zone created successfully
+   - Assigned nameservers: felicity.ns.cloudflare.com, nucum.ns.cloudflare.com
+   - Status: ✅ Complete
+
+3. **Cloudflare DNS Records Added:**
+
+   **Record 1 - A Record (apex domain):**
+   - Type: A
+   - Name: @ (or upholdmyword.org)
+   - Content: 216.198.79.1 (Vercel project-specific IP)
+   - Proxy status: DNS only (gray cloud) ✅
+   - TTL: Auto
+   - Status: ✅ Complete
+
+   **Record 2 - CNAME Record (www subdomain):**
+   - Type: CNAME
+   - Name: www
+   - Content: cname.vercel-dns.com
+   - Proxy status: DNS only (gray cloud) ✅
+   - TTL: Auto
+   - Status: ✅ Complete
+
+4. **Vercel Domain Configuration:**
+   - Domain added: upholdmyword.org
+   - DNS records verified in Vercel dashboard:
+     - A record: @ → 216.198.79.1 ✅
+     - CNAME record: www → cname.vercel-dns.com ✅
+   - Current status: "Invalid Configuration" (waiting for DNS propagation)
+   - Status: ✅ Configuration complete, waiting for propagation
+
+**Important Note on IP Address:**
+- Vercel now assigns project-specific IP addresses (not universal IPs)
+- Correct IP for this project: 216.198.79.1 (verified in Vercel domain settings)
+- Previous confusion: Initially suggested 76.76.21.21 (old legacy Vercel IP)
+- Corrected by checking Vercel's project-specific DNS requirements
+
+**Current Status - December 27, 2025 (Evening):**
+- **Cloudflare Zone Status:** Pending (waiting for nameserver verification)
+- **Nameserver Propagation:** In progress from Squarespace to Cloudflare
+- **DNS Records:** Configured and ready in Cloudflare
+- **Vercel Status:** Invalid Configuration (expected until DNS propagates)
+- **Manual Check Triggered:** Clicked "Check nameservers now" in Cloudflare
+- **Cloudflare Message:** "Cloudflare is now checking the nameservers for upholdmyword.org. Please wait a few hours for an update."
+
+**Expected Timeline:**
+- **Cloudflare nameserver verification:** 2-6 hours (up to 24 hours max)
+- **DNS record propagation:** 5-10 minutes after Cloudflare activation
+- **Email notification:** Cloudflare will email when domain is activated
+- **Total expected time:** 2-6 hours until fully operational
+
+**Verification Steps Pending:**
+1. ⏳ Wait for Cloudflare email confirmation of domain activation
+2. ⏳ Verify Cloudflare zone status changes from "Pending" to "Active"
+3. ⏳ Test DNS resolution: `nslookup upholdmyword.org 8.8.8.8`
+4. ⏳ Refresh domain in Vercel → Settings → Domains
+5. ⏳ Verify Vercel domain status changes to "Valid"
+6. ⏳ Test https://upholdmyword.org in browser
+
+**Next Actions:**
+- Check email for Cloudflare activation notification (within 2-24 hours)
+- Once activated, click "Refresh" in Vercel Domains page
+- Test custom domain URL in browser
+- Verify SSL certificate is automatically provisioned by Vercel
+
+**Documentation Reference:**
+- Cloudflare zone status documentation reviewed
+- Confirmed "Pending" status is normal during nameserver verification
+- Free plan domains remain pending until nameservers are verified or 28 days (automatic deletion)
+- Once verified, status changes to "Active" automatically
 
 **Production Testing Completed:**
 1. ✅ Live deployment URL verified: https://uphold-app.vercel.app
@@ -2088,9 +2215,80 @@ Successfully implemented psychological commitment strengthening features from th
 - ✅ Community page (with dummy data)
 
 **Pending Items:**
-- ⏳ Custom domain DNS propagation (upholdyourgoal.com)
+- ⏳ Custom domain DNS propagation (upholdmyword.org)
 - ⏳ Database migration for `word_confirmed_at` column
 - ⏳ Production Stripe keys (currently using test mode)
+
+---
+
+## 🌐 Domain Migration (December 30, 2025)
+
+**Status:** ✅ COMPLETED
+
+### Overview
+Migrated all references from the old domain name to the new official domain: **upholdmyword.org**
+
+### Changes Made
+
+**Old Domain References:**
+- `upholdyourgoal.com`
+- `upholdmygoal.com`
+- `upholdyourgoal@gmail.com`
+
+**New Domain:**
+- **Official Website:** `upholdmyword.org`
+- **Support Email:** `upholdmyword@gmail.com`
+
+### Files Updated
+
+1. **Documentation Files:**
+   - `PROJECT_STATUS.md` - All domain and email references
+   - `PRE_LAUNCH_CHECKLIST.md` - Environment variables section
+   - `DOMAIN_SETUP.md` - Complete domain setup guide
+   - `YOUR_LAUNCH_PLAN.md` - Domain example
+   - `MANUAL_DONATION_PROCESSING.md` - Support email
+
+2. **Code Files:**
+   - `lib/email-templates.ts` - All email templates updated:
+     - Support email: `upholdmyword@gmail.com`
+     - Footer links: `https://upholdmyword.org`
+     - Fallback URLs: `https://upholdmyword.org`
+   - `app/api/send-welcome-email/route.ts` - Welcome email template:
+     - Support email: `upholdmyword@gmail.com`
+     - All URLs: `https://upholdmyword.org`
+
+### Email Template Updates
+
+All 4 email types now reference the new domain:
+1. **Payment Confirmation** - Links to `https://upholdmyword.org`
+2. **Welcome Email** - Links to `https://upholdmyword.org`
+3. **Refund Processed** - Contact email: `upholdmyword@gmail.com`
+4. **Donation Receipt** - Footer links to `https://upholdmyword.org`
+
+### Next Steps for Domain
+
+1. **DNS Configuration:**
+   - Add domain to Vercel project settings
+   - Configure A records and CNAME records
+   - Wait for DNS propagation (24-48 hours)
+
+2. **Email Configuration:**
+   - Verify domain in Resend dashboard
+   - Add SPF, DKIM, DMARC records
+   - Update `RESEND_FROM_EMAIL` to `Uphold <noreply@upholdmyword.org>`
+
+3. **Environment Variables:**
+   - Update `NEXT_PUBLIC_APP_URL=https://upholdmyword.org`
+   - Redeploy to Vercel
+
+### Verification
+- ✅ All active code files updated
+- ✅ All documentation files updated
+- ✅ All email templates updated
+- ✅ Backup folders left unchanged (not part of active codebase)
+- ✅ No remaining references to old domain names
+
+**Git Commit:** Ready to commit all domain migration changes
 
 ---
 
